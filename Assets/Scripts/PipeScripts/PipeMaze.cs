@@ -34,6 +34,7 @@ public class PipeMaze : MonoBehaviour
     public GameObject up;
     private bool isUp = false;
     public int initialX = 0;
+    public int initialY = 0;
     public int initialZ = 0;
 
 
@@ -45,13 +46,17 @@ public class PipeMaze : MonoBehaviour
         InitialiseMap();
         Generate();
 
-        /*Debug.Log(map[3, 14]);
-        Debug.Log(Search2D(3, 14, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
-        if (map[3, 14] == 1 && !Search2D(3, 14, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }))
-        {
-            Debug.Log("bi da");
-            Generate();
-        }*/
+        
+        bool temp = true;
+        while(map[3, 4] == 1 || !Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) {
+            Debug.Log(map[3, 4]);
+            Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
+
+                Debug.Log("bi da");
+                InitialiseMap();
+                Generate();
+            
+        }
 
         DrawMap();
         PlaceFPS();
@@ -59,6 +64,7 @@ public class PipeMaze : MonoBehaviour
 
     void InitialiseMap()
     {
+         Debug.Log("initializ");
         map = new byte[width, depth];
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
@@ -69,6 +75,7 @@ public class PipeMaze : MonoBehaviour
 
     public virtual void Generate()
     {
+         Debug.Log("generate in maze");
         for (int z = 0; z < depth; z++) { 
             for (int x = 0; x < width; x++)
             {
@@ -86,7 +93,7 @@ public class PipeMaze : MonoBehaviour
             {
                 if (map[x, z] == 0)
                 {
-                    FPC.transform.position = new Vector3(x * scale, 1/2, z * scale);
+                    FPC.transform.position = new Vector3(initialX + 1+ (x * scale), initialY , initialZ + 1 +(z * scale));
                     return;
                 }
             }
@@ -109,49 +116,36 @@ public class PipeMaze : MonoBehaviour
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 5, 1, 5 })) //horizontal end piece -|
                 {
                     GameObject block = Instantiate(endpiece);
-                    block.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 1, 5 })) //horizontal end piece |-
                 {
                     GameObject block = Instantiate(endpiece);
-                    block.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 180, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 1, 5, 0, 5 })) //vertical end piece T
                 {
                     GameObject block = Instantiate(endpiece);
-                    block.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, -90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 1, 5 })) //vertical end piece upside downT
                 {
                     GameObject block = Instantiate(endpiece);
-                    block.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 0, 5 })) //vertical straight
                 {
-                    /*if (isUp == false)
-                    {
-                        Vector3 pos = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
-                        Instantiate(up, pos, Quaternion.identity);
-                        isUp = true;
-                        Debug.Log("x  " + x + "  z  " + z);
-                    } else
-                    {
-                        Vector3 pos = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
-                        Instantiate(straight, pos, Quaternion.identity);
-                    }*/
-
-                    Vector3 pos = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     Instantiate(straight, pos, Quaternion.identity);
-
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) //horizontal straight
                 {
-                    if (isUp == false && x == 3 && z == 14)
+                    if (isUp == false && x == 3 && z == 4)
                     {
-                        Vector3 pos = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(up, pos, Quaternion.identity);
                         go.transform.Rotate(0, 90, 0);
                         Debug.Log("x  " + x + "  z  " + z);
@@ -159,7 +153,7 @@ public class PipeMaze : MonoBehaviour
                     }
                     else
                     {
-                        Vector3 pos = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(straight, pos, Quaternion.identity);
                         go.transform.Rotate(0, 90, 0);
                     }
@@ -168,53 +162,53 @@ public class PipeMaze : MonoBehaviour
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 1, 0, 1 })) //crossroad
                 {
                     GameObject go = Instantiate(crossroad);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 1, 0, 5 })) //upper left corner
                 {
                     GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 0, 1 })) //upper right corner
                 {
                     GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 1, 5 })) //lower right corner
                 {
                     GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 5, 0, 1, 5, 1, 5 })) //lower left corner
                 {
                     GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 5, 1, 5 })) //tjunc  upsidedown T
                 {
                     GameObject go = Instantiate(tIntersection);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 1, 0, 1 })) //tjunc  T
                 {
                     GameObject go = Instantiate(tIntersection);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 0, 0, 1, 1, 0, 5 })) //tjunc  -|
                 {
                     GameObject go = Instantiate(tIntersection);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 0, 1 })) //tjunc  |-
                 {
                     GameObject go = Instantiate(tIntersection);
-                    go.transform.position = new Vector3(initialX + x * scale, 0, initialZ + z * scale);
+                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                 }
 
 

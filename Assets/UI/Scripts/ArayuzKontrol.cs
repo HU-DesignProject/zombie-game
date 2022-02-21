@@ -8,7 +8,7 @@ public class ArayuzKontrol : MonoBehaviour
 {
     public Text mermiText;
     public Text saglikText;
-    public GameObject sahteMenu;
+    //public GameObject sahteMenu;
 
     bool oyunDurdu;
     GameObject oyuncu;

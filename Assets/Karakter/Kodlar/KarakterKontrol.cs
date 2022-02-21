@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class KarakterKontrol : MonoBehaviour
 {
@@ -10,28 +11,32 @@ public class KarakterKontrol : MonoBehaviour
 
     private float saglik = 100;
     bool hayattaMi;
+    PhotonView view;
     void Start()
     {
         anim = this.GetComponent<Animator>();
         hayattaMi = true;
+        view = GetComponent<PhotonView>();
     }
 
     void Update()
     {
-        if (saglik <= 0)
-        {
-            saglik = 0;
-            hayattaMi = false;
-            anim.SetBool("yasiyorMu", hayattaMi);
-        }
-        if (saglik >= 100)
-        {
-            saglik = 100;
-        }
+        if (view.IsMine) {
+            if (saglik <= 0)
+            {
+                saglik = 0;
+                hayattaMi = false;
+                anim.SetBool("yasiyorMu", hayattaMi);
+            }
+            if (saglik >= 100)
+            {
+                saglik = 100;
+            }
 
-        if (hayattaMi == true)
-        {
-            Hareket();
+            if (hayattaMi == true)
+            {
+                Hareket();
+            }
         }
     }
     public float GetSaglik()

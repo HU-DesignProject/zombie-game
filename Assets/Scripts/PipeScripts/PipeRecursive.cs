@@ -6,6 +6,7 @@ public class PipeRecursive : PipeMaze
 {
     public override void Generate()
     {
+        Debug.Log("generate in child");
         // Generate(Random.Range(1, width), Random.Range(1, depth));
         Generate(5, 5);
     }
