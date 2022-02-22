@@ -36,6 +36,8 @@ public class Zombi : MonoBehaviour
         if (zombiOlu == true)
         {
             zombiAnim.SetBool("oldu", true);
+                 zombiAnim.SetBool("yuruyor", false);
+                    zombiAnim.SetBool("saldiriyor", false);
             StartCoroutine(YokOl());
         }
         else
