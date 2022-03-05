@@ -8,6 +8,7 @@ public class KarakterKontrol : MonoBehaviour
     Animator anim;
     [SerializeField]
     private float karakterHiz;
+    [SerializeField] private bool m_IsWalking;
 
     private float saglik = 100;
     bool hayattaMi;
@@ -71,4 +72,15 @@ public class KarakterKontrol : MonoBehaviour
             }
         }
     }
+     public int GetPlayerStealthProfile()
+        {
+            if (m_IsWalking)
+            {
+                return 0;
+            } else
+            {
+                return 1;
+            }
+        }
+
 }
