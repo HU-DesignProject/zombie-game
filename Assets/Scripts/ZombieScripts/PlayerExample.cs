@@ -8,7 +8,7 @@ public class PlayerExample : MonoBehaviour {
     public float walkEnemyPerceptionRadius = 1f;
     public float sprintEnemyPerceptionRadius = 1.5f;
     public LayerMask zombieLayer;
-
+    public Transform spherecastSpawn;
     private AudioSource audioSource;
     private KarakterKontrol fpsc;
     private SphereCollider sphereCollider;
@@ -42,12 +42,12 @@ public class PlayerExample : MonoBehaviour {
         for (int i = 0; i < zombies.Length; i++)
         {
             zombies[i].GetComponent<AIExample>().OnAware();
-        }
+        } 
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Zombie"))
+        if (other.gameObject.CompareTag("Zombi"))
         {
             other.GetComponent<AIExample>().OnAware();
         }

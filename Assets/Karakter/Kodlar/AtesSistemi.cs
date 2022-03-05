@@ -77,9 +77,10 @@ public class AtesSistemi : MonoBehaviour
             sesKaynagi.PlayOneShot(atesSes);
             Ray ray = kamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
+            Debug.Log("ates");
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, zombiKatman))
             {
-                hit.collider.gameObject.GetComponent<Zombi>().HasarAl();
+                hit.collider.gameObject.GetComponent<AIExample>().GetDamage(Random.Range(25, 50));
                 Debug.Log("vurdum");
             }
             sarjor--;

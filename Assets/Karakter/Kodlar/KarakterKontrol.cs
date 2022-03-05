@@ -8,7 +8,7 @@ public class KarakterKontrol : MonoBehaviour
     Animator anim;
     [SerializeField]
     private float karakterHiz;
-    [SerializeField] private bool m_IsWalking;
+    [SerializeField] private bool m_IsWalking = false;
 
     private float saglik = 100;
     bool hayattaMi;
@@ -37,6 +37,8 @@ public class KarakterKontrol : MonoBehaviour
             if (hayattaMi == true)
             {
                 Hareket();
+                m_IsWalking = true;
+ 
             }
         }
     }

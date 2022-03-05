@@ -10,20 +10,27 @@ public class AIExample : MonoBehaviour {
 
     public Transform fpsc;
     public WanderType wanderType = WanderType.Random;
+    public int health = 100;
     public float wanderSpeed = 4f;
     public float chaseSpeed = 7f;
     public float fov = 120f;
     public float viewDistance = 10f;
     public float wanderRadius = 7f;
+    public float loseThreshold = 10f; //time in seconds until we lose the player after we stop detecting
     public Transform[] waypoints; //Array of waypoints is only used when waypoint wandering is selected
 
     private bool isAware = false;
+    private bool isDetecting = false;
+
     private Vector3 wanderPoint;
     private NavMeshAgent agent;
     private Renderer renderer;
     private int waypointIndex = 0;
     private Animator animator;
-    
+    private float loseTimer = 0;
+
+    private Collider[] ragdollColliders;
+    private Rigidbody[] ragdollRigidbodies;
 
     public void Start()
     {
@@ -31,23 +38,50 @@ public class AIExample : MonoBehaviour {
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();
         wanderPoint = RandomWanderPoint();
+        ragdollColliders = GetComponentsInChildren<Collider>();
+        ragdollRigidbodies = GetComponentsInChildren<Rigidbody>();
+
+        foreach (Collider col in ragdollColliders)
+        {
+            if (!col.CompareTag("Zombi"))
+            {
+                col.enabled = false;
+            }
+        }
+
+        foreach (Rigidbody rb in ragdollRigidbodies)
+        {
+            rb.isKinematic = true;
+        }
     }
     public void Update()
     {
+        if (health <= 0)
+        {
+            Die();
+            return;
+        }
         if (isAware)
         {
             agent.SetDestination(fpsc.transform.position);
             animator.SetBool("Aware", true);
             agent.speed = chaseSpeed;
+            if (!isDetecting) {
+                loseTimer += Time.deltaTime;
+                if (loseTimer >= loseThreshold) {
+                    isAware = false;
+                    loseTimer = 0;
+                }
+            }
             //renderer.material.color = Color.red;
         } else
         {
-            SearchForPlayer();
             Wander();
             animator.SetBool("Aware", false);
             agent.speed = wanderSpeed;
             //renderer.material.color = Color.blue;
         }
+        SearchForPlayer();
     }
 
     public void SearchForPlayer()
@@ -62,15 +96,41 @@ public class AIExample : MonoBehaviour {
                     if (hit.transform.CompareTag("Player"))
                     {
                         OnAware();
+                    } else {
+                        isDetecting = false;
                     }
+                } else {
+                    isDetecting = false;
                 }
+            } else {
+                isDetecting = false;
             }
+        } else {
+            isDetecting = false;
         }
     }
 
     public void OnAware()
     {
         isAware = true;
+        isDetecting = true;
+        loseTimer = 0;
+    }
+
+    public void Die()
+    {
+        agent.speed = 0;
+        animator.enabled = false;
+
+        foreach (Collider col in ragdollColliders)
+        {
+            col.enabled = true;
+        }
+
+        foreach (Rigidbody rb in ragdollRigidbodies)
+        {
+            rb.isKinematic = false;
+        }
     }
 
     public void Wander()
@@ -112,6 +172,12 @@ public class AIExample : MonoBehaviour {
             }
         }
     }
+
+     public void GetDamage(int damage) 
+    {
+        health -= damage;
+    }
+
 
     public Vector3 RandomWanderPoint()
     {
