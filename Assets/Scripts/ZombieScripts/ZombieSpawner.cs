@@ -5,6 +5,24 @@ using UnityEngine.AI;
 
 public class ZombieSpawner : MonoBehaviour {
 
+    public GameObject theZombie; 
+    public int zombieCount;
+    private void Start()
+    {
+        StartCoroutine(SpawnZombie());
+    }
+
+    IEnumerator SpawnZombie()
+    {
+        while (zombieCount < 10 )
+        {
+            Instantiate(theZombie, new Vector3(Random.Range(0,50), 0, Random.Range(0,50)), Quaternion.identity);
+            yield return new WaitForSeconds(5f);
+            zombieCount += 1;
+        }
+    }
+
+/*
 	public float respawnDuration = 5.0f;
 	public List<GameObject> spawnPoints = new List<GameObject>();
     public int startHealth = 100;
@@ -98,7 +116,7 @@ public class ZombieSpawner : MonoBehaviour {
 		currentFund++;
 
 		upgradeTimer = 0;
-	}
+	}*/
 
    /* public GameObject[] zombies;
     public GameObject zombie;
