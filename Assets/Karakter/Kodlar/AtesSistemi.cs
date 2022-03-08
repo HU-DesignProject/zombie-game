@@ -10,10 +10,11 @@ public class AtesSistemi : MonoBehaviour
     KarakterKontrol hpKontrol;
     public ParticleSystem muzzleFlash;
     Animator anim;
-
+    //public GameObject impactEffect;
     private float sarjor = 30;
     private float cephane = 120;
     private float sarjorKapasitesi = 30;
+    public float range = 100f;
 
     AudioSource sesKaynagi;
     public AudioClip atesSes;
@@ -77,11 +78,14 @@ public class AtesSistemi : MonoBehaviour
             sesKaynagi.PlayOneShot(atesSes);
             Ray ray = kamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
-            Debug.Log("ates");
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, zombiKatman))
+            if (Physics.Raycast(hpKontrol.transform.position, hpKontrol.transform.forward , out hit, range))
             {
-                hit.collider.gameObject.GetComponent<AIExample>().GetDamage(Random.Range(25, 50));
-                Debug.Log("vurdum");
+                if (hit.collider.gameObject.CompareTag("Zombi"))
+                {
+                    hit.collider.gameObject.GetComponent<AIExample>().GetDamage(Random.Range(25, 50));
+                    Debug.Log("vurdum");
+                }
+               // Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             }
             sarjor--;
         }

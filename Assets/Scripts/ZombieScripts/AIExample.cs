@@ -6,8 +6,6 @@ using UnityEngine.AI;
 public class AIExample : MonoBehaviour {
 
     public enum WanderType { Random, Waypoint};
-
-
     public Transform fpsc;
     public WanderType wanderType = WanderType.Random;
     public int health = 100;
@@ -21,6 +19,7 @@ public class AIExample : MonoBehaviour {
 
     private bool isAware = false;
     private bool isDetecting = false;
+    private bool isAttacking = false;
 
     private Vector3 wanderPoint;
     private NavMeshAgent agent;
@@ -73,11 +72,19 @@ public class AIExample : MonoBehaviour {
                     loseTimer = 0;
                 }
             }
+
+            if(Vector3.Distance(agent.transform.position, fpsc.transform.position) < 2f)
+            {
+                animator.SetBool("Attack", true);
+            } else {
+                animator.SetBool("Attack", false);
+            }
             //renderer.material.color = Color.red;
         } else
         {
             Wander();
             animator.SetBool("Aware", false);
+            animator.SetBool("Attack", false);
             agent.speed = wanderSpeed;
             //renderer.material.color = Color.blue;
         }
