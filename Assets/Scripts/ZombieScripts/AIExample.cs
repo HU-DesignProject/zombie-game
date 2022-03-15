@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class AIExample : MonoBehaviour {
 
     public enum WanderType { Random, Waypoint};
-    public Transform fpsc;
+    public GameObject fpsc;
     public WanderType wanderType = WanderType.Random;
     public int health = 100;
     public float wanderSpeed = 4f;
@@ -26,6 +26,10 @@ public class AIExample : MonoBehaviour {
     private Renderer renderer;
     private int waypointIndex = 0;
     private Animator animator;
+    AudioSource soundSource;
+    public AudioClip attackSound;
+
+
     private float loseTimer = 0;
 
     private Collider[] ragdollColliders;
@@ -34,8 +38,10 @@ public class AIExample : MonoBehaviour {
     public void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        fpsc = GameObject.Find("SWAT");
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();
+        soundSource = GetComponent<AudioSource>();
         wanderPoint = RandomWanderPoint();
         ragdollColliders = GetComponentsInChildren<Collider>();
         ragdollRigidbodies = GetComponentsInChildren<Rigidbody>();
@@ -76,6 +82,8 @@ public class AIExample : MonoBehaviour {
             if(Vector3.Distance(agent.transform.position, fpsc.transform.position) < 2f)
             {
                 animator.SetBool("Attack", true);
+                //DoDamage();
+                SetDamageSound();
             } else {
                 animator.SetBool("Attack", false);
             }
@@ -185,6 +193,15 @@ public class AIExample : MonoBehaviour {
         health -= damage;
     }
 
+    public void SetDamageSound()
+    {
+        soundSource.PlayOneShot(attackSound);
+    }
+
+    public void DoDamage()
+    {
+        fpsc.GetComponent<KarakterKontrol>().HasarAl();
+    }
 
     public Vector3 RandomWanderPoint()
     {

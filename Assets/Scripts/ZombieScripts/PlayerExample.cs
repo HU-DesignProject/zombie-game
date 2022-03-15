@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerExample : MonoBehaviour {
     public AudioClip shootSound;
@@ -33,6 +34,12 @@ public class PlayerExample : MonoBehaviour {
         {
             sphereCollider.radius = sprintEnemyPerceptionRadius;
         }
+
+        if ((fpsc.transform.position.x <= 72 && fpsc.transform.position.x >= 66) && (fpsc.transform.position.z <= -80 && fpsc.transform.position.z >= -82)) 
+        {
+            StartCoroutine(FinishGame());
+        }
+        
     }
 
     public void Fire()
@@ -51,5 +58,13 @@ public class PlayerExample : MonoBehaviour {
         {
             other.GetComponent<AIExample>().OnAware();
         }
+    }
+
+    IEnumerator FinishGame()
+    {
+        yield return new WaitForSeconds(5f);
+            Debug.Log("GAME OVER");
+            SceneManager.LoadScene("FinishScene");
+        
     }
 }

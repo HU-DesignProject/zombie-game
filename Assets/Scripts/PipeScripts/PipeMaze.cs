@@ -36,7 +36,7 @@ public class PipeMaze : MonoBehaviour
     public int initialX = 0;
     public int initialY = 0;
     public int initialZ = 0;
-
+    private ZombieSpawner zombieSpawner;
 
     public GameObject FPC;
 
@@ -49,22 +49,29 @@ public class PipeMaze : MonoBehaviour
         
         bool temp = true;
         while(map[3, 4] == 1 || !Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) {
-            Debug.Log(map[3, 4]);
-            Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
+            //Debug.Log(map[3, 4]);
+            //Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
 
-                Debug.Log("bi da");
+               //Debug.Log("bi da");
                 InitialiseMap();
                 Generate();
-            
         }
 
+        //zombieSpawner = GetComponent<ZombieSpawner>();
+        
+
         DrawMap();
+        //PlaceZombies();
         PlaceFPS();
+    }
+
+    public byte[,] SendMap()
+    {
+        return map;
     }
 
     void InitialiseMap()
     {
-         Debug.Log("initializ");
         map = new byte[width, depth];
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
@@ -75,7 +82,6 @@ public class PipeMaze : MonoBehaviour
 
     public virtual void Generate()
     {
-         Debug.Log("generate in maze");
         for (int z = 0; z < depth; z++) { 
             for (int x = 0; x < width; x++)
             {
@@ -100,6 +106,14 @@ public class PipeMaze : MonoBehaviour
         }
     }
 
+    public void PlaceZombies()
+    {
+        Debug.Log("PlaceZombies deyim");
+   //     zombieSpawner.GetComponent<ZombieSpawner>().girdi();
+       // zombieSpawner.SpawnZombieInMaze();
+        
+    }
+
     void DrawMap()
     {
         Debug.Log("in maze");
@@ -116,23 +130,27 @@ public class PipeMaze : MonoBehaviour
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 5, 1, 5 })) //horizontal end piece -|
                 {
                     GameObject block = Instantiate(endpiece);
+                    block.transform.SetParent(gameObject.transform.Find("Maze"));
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 1, 5 })) //horizontal end piece |-
                 {
                     GameObject block = Instantiate(endpiece);
+                    block.transform.SetParent(gameObject.transform.Find("Maze"));
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 180, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 1, 5, 0, 5 })) //vertical end piece T
                 {
                     GameObject block = Instantiate(endpiece);
+                    block.transform.SetParent(gameObject.transform.Find("Maze"));
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, -90, 0);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 1, 5 })) //vertical end piece upside downT
                 {
                     GameObject block = Instantiate(endpiece);
+                    block.transform.SetParent(gameObject.transform.Find("Maze"));
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
                 }

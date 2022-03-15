@@ -7,20 +7,56 @@ public class ZombieSpawner : MonoBehaviour {
 
     public GameObject theZombie; 
     public int zombieCount;
-    private void Start()
+    public int zombieCountInMaze;
+	public GameObject maze;
+	public byte[,] map;
+    public void Start()
     {
-        StartCoroutine(SpawnZombie());
+		//maze = GetComponent<PipeMaze>();
+		maze = GameObject.Find("Maze");
+
+		SpawnZombieInMaze();
+        //StartCoroutine(SpawnZombie());
+		Debug.Log("ZombieSpawner dayim ");
     }
 
-    IEnumerator SpawnZombie()
+	public async void SpawnZombieInMaze()
     {
-        while (zombieCount < 10 )
+
+		map = maze.GetComponent<PipeRecursive>().SendMap();
+		int depth = maze.GetComponent<PipeRecursive>().depth;
+		int width = maze.GetComponent<PipeRecursive>().width;
+		
+		for (int z = 0; z < depth; z++)
+            for (int x = 0; x < width; x++)
+            {
+                if (map[x, z] != 1)
+                {
+					StartCoroutine(SpawnZombie(x, z));
+				}
+			}
+		
+    }
+    IEnumerator SpawnZombie(int x, int z)
+    {
+		int initialX = maze.GetComponent<PipeRecursive>().initialX;
+		int initialY = maze.GetComponent<PipeRecursive>().initialY;
+		int initialZ = maze.GetComponent<PipeRecursive>().initialZ;
+		int scale = maze.GetComponent<PipeRecursive>().scale;
+
+
+		Instantiate(theZombie, new Vector3(initialX + x * scale, 0, initialZ + z * scale), Quaternion.identity);
+
+
+		yield return new WaitForSeconds(5f);
+        /*while (zombieCount < 10 )
         {
             Instantiate(theZombie, new Vector3(Random.Range(0,50), 0, Random.Range(0,50)), Quaternion.identity);
             yield return new WaitForSeconds(5f);
             zombieCount += 1;
-        }
+        }*/
     }
+
 
 /*
 	public float respawnDuration = 5.0f;
