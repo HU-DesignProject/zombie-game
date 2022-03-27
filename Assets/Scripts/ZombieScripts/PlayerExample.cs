@@ -49,6 +49,7 @@ public class PlayerExample : MonoBehaviour {
         for (int i = 0; i < zombies.Length; i++)
         {
             zombies[i].GetComponent<AIExample>().OnAware();
+            Debug.Log("Fire()");
         } 
     }
 
@@ -57,6 +58,7 @@ public class PlayerExample : MonoBehaviour {
         if (other.gameObject.CompareTag("Zombi"))
         {
             other.GetComponent<AIExample>().OnAware();
+             Debug.Log("OnTriggerEnter()");
         }
     }
 

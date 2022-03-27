@@ -12,7 +12,8 @@ public class AIExample : MonoBehaviour {
     public float wanderSpeed = 4f;
     public float chaseSpeed = 7f;
     public float fov = 120f;
-    public float viewDistance = 10f;
+    public float viewDistanceIfInAngle = 10f;
+    public float viewDistance = 5f;
     public float wanderRadius = 7f;
     public float loseThreshold = 10f; //time in seconds until we lose the player after we stop detecting
     public Transform[] waypoints; //Array of waypoints is only used when waypoint wandering is selected
@@ -39,6 +40,7 @@ public class AIExample : MonoBehaviour {
     {
         agent = GetComponent<NavMeshAgent>();
         fpsc = GameObject.Find("SWAT");
+        //fpsc = GetComponent<GameObject>();
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();
         soundSource = GetComponent<AudioSource>();
@@ -103,7 +105,7 @@ public class AIExample : MonoBehaviour {
     {
         if (Vector3.Angle(Vector3.forward, transform.InverseTransformPoint(fpsc.transform.position)) < fov / 2f)
         {
-            if (Vector3.Distance(fpsc.transform.position, transform.position) < viewDistance)
+            if (Vector3.Distance(fpsc.transform.position, transform.position) < viewDistanceIfInAngle)
             {
                 RaycastHit hit;
                 if (Physics.Linecast(transform.position, fpsc.transform.position, out hit, -1))
@@ -121,7 +123,23 @@ public class AIExample : MonoBehaviour {
                 isDetecting = false;
             }
         } else {
-            isDetecting = false;
+            if (Vector3.Distance(fpsc.transform.position, transform.position) < viewDistance / 2f)
+            {
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, fpsc.transform.position, out hit, -1))
+                {
+                    if (hit.transform.CompareTag("Player"))
+                    {
+                        OnAware();
+                    } else {
+                        isDetecting = false;
+                    }
+                } else {
+                    isDetecting = false;
+                }
+            } else {
+                isDetecting = false;
+            }
         }
     }
 
@@ -130,6 +148,7 @@ public class AIExample : MonoBehaviour {
         isAware = true;
         isDetecting = true;
         loseTimer = 0;
+        
     }
 
     public void Die()
