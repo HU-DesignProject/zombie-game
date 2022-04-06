@@ -10,7 +10,7 @@ public class AIExample : MonoBehaviour {
     public WanderType wanderType = WanderType.Random;
     public int health = 100;
     public float wanderSpeed = 4f;
-    public float chaseSpeed = 7f;
+    public float chaseSpeed = 9f;
     public float fov = 120f;
     public float viewDistanceIfInAngle = 10f;
     public float viewDistance = 5f;
