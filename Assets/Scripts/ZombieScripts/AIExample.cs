@@ -39,7 +39,7 @@ public class AIExample : MonoBehaviour {
     public void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        fpsc = GameObject.Find("SWAT");
+        fpsc = GameObject.Find("FPC_Varient");
         //fpsc = GetComponent<GameObject>();
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();

@@ -35,15 +35,30 @@ public class PlayerExample : MonoBehaviour {
             sphereCollider.radius = sprintEnemyPerceptionRadius;
         }
 
-        if ((fpsc.transform.position.x <= 72 && fpsc.transform.position.x >= 66) && (fpsc.transform.position.z <= -80 && fpsc.transform.position.z >= -82)) 
+        if (SceneManager.GetActiveScene().name == "industry")
         {
-            StartCoroutine(FinishGame());
+            if ((fpsc.transform.position.x <= 72 && fpsc.transform.position.x >= 66) && (fpsc.transform.position.z <= -80 && fpsc.transform.position.z >= -82)) 
+            {
+                StartCoroutine(FinishGame());
+            }
         }
+
+        else if (SceneManager.GetActiveScene().name == "Dock Thing")
+        {
+            if ((fpsc.transform.position.x <= 8 && fpsc.transform.position.x >= -5) && (fpsc.transform.position.z <= 72 && fpsc.transform.position.z >= 62) ) 
+            {
+                Debug.Log("alandayim");
+                StartCoroutine(FinishGame());
+            }
+        }
+        
         
     }
 
     public void Fire()
     {
+        Debug.Log(SceneManager.GetActiveScene().name);
+
         audioSource.PlayOneShot(shootSound);
         Collider[] zombies = Physics.OverlapSphere(transform.position, soundIntensity, zombieLayer);
         for (int i = 0; i < zombies.Length; i++)
