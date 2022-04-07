@@ -14,6 +14,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject progressLabel;
 
+    /// <summary>
+    /// Keep track of the current process. Since connection is asynchronous and is based on several callbacks from Photon,
+    /// we need to keep track of this to properly adjust the behavior when we receive call back by Photon.
+    /// Typically this is used for the OnConnectedToMaster() callback.
+    /// </summary>
+    bool isConnecting;
 
     /// <summary>
     /// The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created.
@@ -42,12 +48,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         progressLabel.SetActive(true);
         controlPanel.SetActive(false);
+        
         if (PhotonNetwork.IsConnected)
         {
             PhotonNetwork.JoinRandomRoom();
         }
         else {
-            PhotonNetwork.ConnectUsingSettings();
+            isConnecting = PhotonNetwork.ConnectUsingSettings();
+            //PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = gameVersion;
         }
     }
@@ -57,9 +65,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
-        // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
-        PhotonNetwork.JoinRandomRoom();
+        // we don't want to do anything if we are not attempting to join a room.
+        // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
+        // we don't want to do anything.
+        if (isConnecting)
+        {
+            Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+            // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
+            PhotonNetwork.JoinRandomRoom();
+            isConnecting = false;
+        }
     }
 
 
@@ -68,6 +83,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         progressLabel.SetActive(false);
         controlPanel.SetActive(true);
         Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+        isConnecting = false;
     }
 
 

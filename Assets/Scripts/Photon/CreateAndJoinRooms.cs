@@ -39,6 +39,6 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("industry");
+        PhotonNetwork.LoadLevel("Dock Thing");
     }
 }

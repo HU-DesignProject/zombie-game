@@ -11,16 +11,30 @@ public class SpawnPlayers : MonoBehaviour
     public float maxX;
     public float minZ;
     public float maxZ;
+    public Transform spawnPoint;
+    public KameraKontrol kameraKontrol;
+
+    private void Awake()
+    {
+        kameraKontrol = FindObjectOfType<KameraKontrol>();
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 randomPosition = new Vector3(Random.Range(minX, maxX), 0, Random.Range(minZ, maxZ));
-        PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+        SpawnPlayer();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    void SpawnPlayer() 
+    {
+        //Vector3 randomPosition = new Vector3(Random.Range(minX, maxX), 0, Random.Range(minZ, maxZ));
+        GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
+        kameraKontrol.SetCameraTarget(player.transform);
     }
 }

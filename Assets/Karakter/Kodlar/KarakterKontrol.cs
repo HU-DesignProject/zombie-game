@@ -12,17 +12,18 @@ public class KarakterKontrol : MonoBehaviour
 
     private float saglik = 100;
     bool hayattaMi;
-    PhotonView view;
+    [SerializeField]
+    PhotonView photonView;
     void Start()
     {
         anim = this.GetComponent<Animator>();
         hayattaMi = true;
-        view = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
     }
 
     void Update()
     {
-        if (view.IsMine) {
+        if (photonView.IsMine) {
             if (saglik <= 0)
             {
                 saglik = 0;

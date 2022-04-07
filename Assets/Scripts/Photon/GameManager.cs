@@ -41,7 +41,7 @@ namespace Com.MyCompany.MyGame
         }
         public override void OnLeftRoom()
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("Lobby");
         }
 
         public void continuePressed() 
