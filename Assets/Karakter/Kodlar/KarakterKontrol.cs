@@ -2,20 +2,90 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Com.MyCompany.MyGame;
 
 public class KarakterKontrol : MonoBehaviour
 {
     Animator anim;
     [SerializeField]
     private float karakterHiz;
-    [SerializeField] private bool m_IsWalking = false;
+    [SerializeField] 
+    private bool m_IsWalking = false;
 
-    private float saglik = 100;
+    #region Public Fields
+    [Tooltip("The current Health of our player")]
+    public float saglik = 100f;
+    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+    public static GameObject LocalPlayerInstance;
+    #endregion
+
+    [Tooltip("The Player's UI GameObject Prefab")]
+    [SerializeField]
+    private GameObject playerUiPrefab;
+
+
     bool hayattaMi;
     [SerializeField]
-    PhotonView photonView;
+    public PhotonView photonView;
+
+    /// <summary>
+    /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
+    /// </summary>
+    public void Awake()
+    {
+        /*if (this.beams == null)
+        {
+            Debug.LogError("<Color=Red><b>Missing</b></Color> Beams Reference.", this);
+        }
+        else
+        {
+            this.beams.SetActive(false);
+        }*/
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instanciation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            //playerUiPrefab = GameManager.FindObjectOfType<GameObject>();
+            LocalPlayerInstance = gameObject;
+        }
+        // #Critical
+        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        DontDestroyOnLoad(gameObject);
+    }
+
+
     void Start()
     {
+        KameraKontrol _kameraKontrol = gameObject.GetComponent<KameraKontrol>();
+
+        if (_kameraKontrol != null)
+        {
+            if (photonView.IsMine)
+            {
+                _kameraKontrol.OnStartFollowing();
+            }
+        }
+        else
+        {
+            Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
+        }
+
+        // Create the UI
+        if (this.playerUiPrefab != null)
+        {
+            GameObject _uiGo = Instantiate(this.playerUiPrefab);
+            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+        }
+        else
+        {
+            Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
+        }
+        #if UNITY_5_4_OR_NEWER
+        // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
+		UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        #endif
+
+
         anim = this.GetComponent<Animator>();
         hayattaMi = true;
         photonView = GetComponent<PhotonView>();
@@ -65,6 +135,10 @@ public class KarakterKontrol : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+         if (!photonView.IsMine)
+            {
+                return;
+            }
         if (other.gameObject.tag == "SaglikKutusu")
         {
             if (saglik < 100)
@@ -86,4 +160,51 @@ public class KarakterKontrol : MonoBehaviour
             }
         }
 
-}
+        /// <summary>
+        /// MonoBehaviour method called after a new level of index 'level' was loaded.
+        /// We recreate the Player UI because it was destroy when we switched level.
+        /// Also reposition the player if outside the current arena.
+        /// </summary>
+        /// <param name="level">Level index loaded</param>
+        void CalledOnLevelWasLoaded(int level)
+        {
+            // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
+            if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+            {
+                transform.position = new Vector3(0f, 5f, 0f);
+            }
+
+            GameObject _uiGo = Instantiate(this.playerUiPrefab);
+            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+        }
+
+
+    #if UNITY_5_4_OR_NEWER
+	void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
+	{
+		this.CalledOnLevelWasLoaded(scene.buildIndex);
+	}
+	#endif
+
+            #region IPunObservable implementation
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                // We own this player: send the others our data
+                //stream.SendNext(this.IsFiring);
+                stream.SendNext(this.saglik);
+            }
+            else
+            {
+                // Network player, receive data
+                //this.IsFiring = (bool)stream.ReceiveNext();
+                this.saglik = (float)stream.ReceiveNext();
+            }
+        }
+
+        #endregion
+
+
+}   
