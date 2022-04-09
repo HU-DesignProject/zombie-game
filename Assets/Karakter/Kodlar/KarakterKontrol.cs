@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using Com.MyCompany.MyGame;
+using UnityEngine.SceneManagement;
 
 public class KarakterKontrol : MonoBehaviour
 {
     Animator anim;
     [SerializeField]
     private float karakterHiz;
+
+    public AudioClip shootSound;
+    public float soundIntensity = 5f;
+    public float walkEnemyPerceptionRadius = 1f;
+    public float sprintEnemyPerceptionRadius = 1.5f;
+    public LayerMask zombieLayer;
+
+    public Transform spherecastSpawn;
+    private AudioSource audioSource;
+    private SphereCollider sphereCollider;
+
+
     [SerializeField] 
     private bool m_IsWalking = false;
 
@@ -22,6 +34,7 @@ public class KarakterKontrol : MonoBehaviour
     [Tooltip("The Player's UI GameObject Prefab")]
     [SerializeField]
     private GameObject playerUiPrefab;
+
 
 
     bool hayattaMi;
@@ -57,6 +70,8 @@ public class KarakterKontrol : MonoBehaviour
     void Start()
     {
         KameraKontrol _kameraKontrol = gameObject.GetComponent<KameraKontrol>();
+        audioSource = GetComponent<AudioSource>();
+        sphereCollider = GetComponent<SphereCollider>();
 
         if (_kameraKontrol != null)
         {
@@ -94,6 +109,18 @@ public class KarakterKontrol : MonoBehaviour
     void Update()
     {
         if (photonView.IsMine) {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Fire();
+            }
+            if (GetPlayerStealthProfile() == 0)
+            {
+                sphereCollider.radius = walkEnemyPerceptionRadius;
+            } else
+            {
+                sphereCollider.radius = sprintEnemyPerceptionRadius;
+            }
+
             if (saglik <= 0)
             {
                 saglik = 0;
@@ -147,6 +174,10 @@ public class KarakterKontrol : MonoBehaviour
 
                 Destroy(other.gameObject);
             }
+        }
+        if (other.gameObject.CompareTag("Zombi"))
+        {
+            other.GetComponent<AIExample>().OnAware();
         }
     }
      public int GetPlayerStealthProfile()
@@ -206,5 +237,16 @@ public class KarakterKontrol : MonoBehaviour
 
         #endregion
 
+    public void Fire()
+    {
+        Debug.Log(SceneManager.GetActiveScene().name);
 
+        audioSource.PlayOneShot(shootSound);
+        Collider[] zombies = Physics.OverlapSphere(transform.position, soundIntensity, zombieLayer);
+        for (int i = 0; i < zombies.Length; i++)
+        {
+            zombies[i].GetComponent<AIExample>().OnAware();
+        } 
+    }
+    
 }   

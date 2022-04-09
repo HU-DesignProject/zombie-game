@@ -30,7 +30,7 @@ public class AtesSistemi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (hpKontrol.YasiyorMu() == true)
+        if (hpKontrol.YasiyorMu() == true && hpKontrol.photonView.IsMine)
         {
             if (Input.GetMouseButton(0))
             {

@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class AttackEvent : MonoBehaviour {
-    private PlayerExample pe;
+    private KarakterKontrol pe;
     public void Start() 
     {
-        pe = GetComponent<PlayerExample>();
+        pe = GetComponent<KarakterKontrol>();
     }
     public void DamageEvent()
     {
