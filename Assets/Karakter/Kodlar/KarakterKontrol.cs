@@ -15,7 +15,6 @@ public class KarakterKontrol : MonoBehaviour
     public float walkEnemyPerceptionRadius = 1f;
     public float sprintEnemyPerceptionRadius = 1.5f;
     public LayerMask zombieLayer;
-
     public Transform spherecastSpawn;
     private AudioSource audioSource;
     private SphereCollider sphereCollider;
@@ -239,8 +238,6 @@ public class KarakterKontrol : MonoBehaviour
 
     public void Fire()
     {
-        Debug.Log(SceneManager.GetActiveScene().name);
-
         audioSource.PlayOneShot(shootSound);
         Collider[] zombies = Physics.OverlapSphere(transform.position, soundIntensity, zombieLayer);
         for (int i = 0; i < zombies.Length; i++)
