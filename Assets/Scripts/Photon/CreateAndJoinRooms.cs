@@ -11,6 +11,9 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     public InputField createInput;
     public InputField joinInput;
     private const int maxPlayers = 2;
+    [Tooltip("The UI Loader Anime")]
+	[SerializeField]
+    private LoaderAnime loaderAnime;
 
     public void CreateRoom()
     {
@@ -32,7 +35,12 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         Debug.Log("Created Room");
     }
     public void JoinRoom()
-    {
+    {   
+        if (loaderAnime!=null)
+			{
+				loaderAnime.StartLoaderAnimation();
+			}
+
         PhotonNetwork.JoinRoom(joinInput.text);
         Debug.Log("Joined Room");
     }
