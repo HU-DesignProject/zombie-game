@@ -29,6 +29,10 @@ using UnityEngine.UI;
 	    [SerializeField]
 	    private Text playerNameText;
 
+		[Tooltip("UI Text to display Player's Bullet Count")]
+	    [SerializeField]
+	    private Text bulletCount;
+
 	    [Tooltip("UI Slider to display Player's Health")]
 	    [SerializeField]
 	    private Slider playerHealthSlider;
@@ -76,6 +80,10 @@ using UnityEngine.UI;
 			// Reflect the Player Health
 			if (playerHealthSlider != null) {
 				playerHealthSlider.value = target.saglik;
+			}
+
+			if (bulletCount.text != null) {
+				bulletCount.text = target.GetComponent<AtesSistemi>().GetSarjor().ToString();
 			}
 		}
 
@@ -136,6 +144,7 @@ using UnityEngine.UI;
 
 			if (playerNameText != null) {
                 playerNameText.text = this.target.photonView.Owner.NickName;
+				
 			}
 		}
 

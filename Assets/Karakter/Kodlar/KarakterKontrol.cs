@@ -34,8 +34,6 @@ public class KarakterKontrol : MonoBehaviour
     [SerializeField]
     private GameObject playerUiPrefab;
 
-
-
     bool hayattaMi;
     [SerializeField]
     public PhotonView photonView;
@@ -135,8 +133,8 @@ public class KarakterKontrol : MonoBehaviour
             {
                 Hareket();
                 m_IsWalking = true;
- 
             }
+            
         }
     }
     public float GetSaglik()
