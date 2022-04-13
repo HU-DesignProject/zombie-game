@@ -6,11 +6,13 @@ using UnityEngine.AI;
 public class AIExample : MonoBehaviour {
 
     public enum WanderType { Random, Waypoint};
-    public GameObject fpsc;
+    private GameObject fpsc;
+    public GameObject[] playerList;
+
     public WanderType wanderType = WanderType.Random;
     public int health = 100;
     public float wanderSpeed = 4f;
-    public float chaseSpeed = 7f;
+    public float chaseSpeed = 9f;
     public float fov = 120f;
     public float viewDistanceIfInAngle = 10f;
     public float viewDistance = 5f;
@@ -38,8 +40,11 @@ public class AIExample : MonoBehaviour {
 
     public void Start()
     {
+        Debug.Log("zombie start");
         agent = GetComponent<NavMeshAgent>();
-        fpsc = GameObject.Find("SWAT");
+        playerList = GameObject.FindGameObjectsWithTag("Player");
+        Debug.Log("playerList  ", playerList[0]);
+        fpsc = playerList[0];
         //fpsc = GetComponent<GameObject>();
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();
@@ -144,7 +149,7 @@ public class AIExample : MonoBehaviour {
     }
 
     public void OnAware()
-    {
+    {   
         isAware = true;
         isDetecting = true;
         loseTimer = 0;

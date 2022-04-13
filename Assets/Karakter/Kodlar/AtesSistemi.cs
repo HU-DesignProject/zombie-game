@@ -11,7 +11,7 @@ public class AtesSistemi : MonoBehaviour
     public ParticleSystem muzzleFlash;
     Animator anim;
     //public GameObject impactEffect;
-    private float sarjor = 30;
+    public float sarjor = 30;
     private float cephane = 120;
     private float sarjorKapasitesi = 30;
     public float range = 100f;
@@ -21,16 +21,17 @@ public class AtesSistemi : MonoBehaviour
     public AudioClip reloadSes;
     void Start()
     {
-        kamera = Camera.main;
-        hpKontrol = this.gameObject.GetComponent<KarakterKontrol>();
-        anim = this.gameObject.GetComponent<Animator>();
-        sesKaynagi= this.gameObject.GetComponent<AudioSource>();
+            kamera = Camera.main;
+            hpKontrol = this.gameObject.GetComponent<KarakterKontrol>();
+            anim = this.gameObject.GetComponent<Animator>();
+            sesKaynagi= this.gameObject.GetComponent<AudioSource>();
+                
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hpKontrol.YasiyorMu() == true)
+        if (hpKontrol.YasiyorMu() == true && hpKontrol.photonView.IsMine)
         {
             if (Input.GetMouseButton(0))
             {
@@ -89,8 +90,6 @@ public class AtesSistemi : MonoBehaviour
             }
             sarjor--;
         }
-
-
     }
     
     public float GetSarjor()

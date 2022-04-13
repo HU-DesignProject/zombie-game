@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PlayerUI.cs" company="Exit Games GmbH">
 //   Part of: Photon Unity Networking Demos
 // </copyright>
@@ -11,9 +11,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Photon.Pun.Demo.PunBasics
-{
-	#pragma warning disable 649
+
 
 	/// <summary>
 	/// Player UI. Constraint the UI to follow a PlayerManager GameObject in the world,
@@ -31,11 +29,15 @@ namespace Photon.Pun.Demo.PunBasics
 	    [SerializeField]
 	    private Text playerNameText;
 
+		[Tooltip("UI Text to display Player's Bullet Count")]
+	    [SerializeField]
+	    private Text bulletCount;
+
 	    [Tooltip("UI Slider to display Player's Health")]
 	    [SerializeField]
 	    private Slider playerHealthSlider;
 
-        PlayerManager target;
+        KarakterKontrol target;
 
 		float characterControllerHeight;
 
@@ -56,7 +58,7 @@ namespace Photon.Pun.Demo.PunBasics
 		/// </summary>
 		void Awake()
 		{
-
+            Debug.Log("playerUIdayım");
 			_canvasGroup = this.GetComponent<CanvasGroup>();
 			
 			this.transform.SetParent(GameObject.Find("Canvas").GetComponent<Transform>(), false);
@@ -77,7 +79,11 @@ namespace Photon.Pun.Demo.PunBasics
 
 			// Reflect the Player Health
 			if (playerHealthSlider != null) {
-				playerHealthSlider.value = target.Health;
+				playerHealthSlider.value = target.saglik;
+			}
+
+			if (bulletCount.text != null) {
+				bulletCount.text = target.GetComponent<AtesSistemi>().GetSarjor().ToString();
 			}
 		}
 
@@ -116,7 +122,7 @@ namespace Photon.Pun.Demo.PunBasics
 		/// Assigns a Player Target to Follow and represent.
 		/// </summary>
 		/// <param name="target">Target.</param>
-		public void SetTarget(PlayerManager _target){
+		public void SetTarget(KarakterKontrol _target){
 
 			if (_target == null) {
 				Debug.LogError("<Color=Red><b>Missing</b></Color> PlayMakerManager target for PlayerUI.SetTarget.", this);
@@ -138,10 +144,11 @@ namespace Photon.Pun.Demo.PunBasics
 
 			if (playerNameText != null) {
                 playerNameText.text = this.target.photonView.Owner.NickName;
+				
 			}
 		}
 
 		#endregion
 
-	}
+	
 }

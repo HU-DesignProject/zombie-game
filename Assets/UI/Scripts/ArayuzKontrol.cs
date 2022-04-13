@@ -20,8 +20,8 @@ public class ArayuzKontrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        mermiText.text = oyuncu.GetComponent<AtesSistemi>().GetSarjor().ToString()+"/"+ oyuncu.GetComponent<AtesSistemi>().GetCephane().ToString();
-        saglikText.text = "HP:" + oyuncu.GetComponent<KarakterKontrol>().GetSaglik();
+        //mermiText.text = oyuncu.GetComponent<AtesSistemi>().GetSarjor().ToString()+"/"+ oyuncu.GetComponent<AtesSistemi>().GetCephane().ToString();
+        //saglikText.text = "HP:" + oyuncu.GetComponent<KarakterKontrol>().GetSaglik();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (oyunDurdu == true)

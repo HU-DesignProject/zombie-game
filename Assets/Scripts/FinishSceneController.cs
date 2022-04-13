@@ -9,8 +9,8 @@ public class FinishSceneController : MonoBehaviour {
     void Start()
     {
         Cursor.visible = true;
-         Screen.lockCursor = false;
-         Time.timeScale = 1; 
+        Screen.lockCursor = false;
+        Time.timeScale = 1; 
     }
 
     public void PassToDockScene()
