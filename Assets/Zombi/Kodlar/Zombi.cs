@@ -82,8 +82,8 @@ public class Zombi : MonoBehaviour
         yield return new WaitForSeconds(5);
         Destroy(this.gameObject);
     }
-    public void HasarAl()
+    public void GetDamage(int damage)
     {
-        zombiHP -= Random.Range(15, 25);
+        zombiHP -= damage;
     }
 }

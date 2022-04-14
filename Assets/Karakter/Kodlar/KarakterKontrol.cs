@@ -30,6 +30,8 @@ public class KarakterKontrol : MonoBehaviour
     private float saglik = 100;
     bool hayattaMi;
 
+    private int healthPack=0; 
+
     AudioSource srcSound;
     public AudioClip painSound;
 
@@ -153,5 +155,15 @@ public class KarakterKontrol : MonoBehaviour
                 return 1;
             }
         }
+
+    public int GetHealthPack(){
+        return healthPack;
+    }
+    public void AddHealthPack(){
+        healthPack++;
+    }
+    public void UseHealthPack(){
+        healthPack--;
+    }
 
 }

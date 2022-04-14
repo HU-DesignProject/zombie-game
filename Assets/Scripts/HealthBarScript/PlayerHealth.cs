@@ -38,26 +38,29 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        health=Mathf.Clamp(health,0,maxHealth);
-        UpdateHealthUI();
-        if(Input.GetKeyDown(KeyCode.N)){
-            TakeDamage(Random.Range(5,10));
-        }
-        if(Input.GetKeyDown(KeyCode.M)){
-            RestoreHealth(Random.Range(5,10));
-        }
+        if(targetPlayer.GetComponent<KarakterKontrol>().YasiyorMu()){
+            health=Mathf.Clamp(health,0,maxHealth);
+            UpdateHealthUI();
+            if(Input.GetKeyDown(KeyCode.N)){
+                TakeDamage(Random.Range(5,10));
+            }
+            if(Input.GetKeyDown(KeyCode.H)){
+                RestoreHealth(50f);
+            }
 
-        if(isTakingDamage){
-            damageImage.enabled=true;
-            damageImage.color=damageColor;
+            if(isTakingDamage){
+                damageImage.enabled=true;
+                damageImage.color=damageColor;
 
+            }
+            else{
+                damageImage.color=Color.Lerp(damageImage.color,Color.clear,colorSmoothing*Time.deltaTime*Time.deltaTime);
+
+            }
+
+            isTakingDamage=false;
         }
-        else{
-            damageImage.color=Color.Lerp(damageImage.color,Color.clear,colorSmoothing*Time.deltaTime*Time.deltaTime);
-
-        }
-
-        isTakingDamage=false;
+        
 
     }
 
@@ -96,6 +99,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void RestoreHealth(float healAmount){
         health+=healAmount;
+        targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack();
         lerpTimer=0f;
     }
 
