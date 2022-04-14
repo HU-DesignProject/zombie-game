@@ -38,6 +38,7 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        health=targetPlayer.GetComponent<KarakterKontrol>().GetSaglik();
         if(targetPlayer.GetComponent<KarakterKontrol>().YasiyorMu()){
             health=Mathf.Clamp(health,0,maxHealth);
             UpdateHealthUI();
@@ -98,9 +99,12 @@ public class PlayerHealth : MonoBehaviour
     }
 
     public void RestoreHealth(float healAmount){
-        health+=healAmount;
-        targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack();
-        lerpTimer=0f;
+        if(health<maxHealth){
+            //health+=healAmount;
+            targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack(healAmount);
+            lerpTimer=0f;
+        }
+      
     }
 
 

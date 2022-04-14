@@ -12,10 +12,11 @@ public class RaycastShooting : MonoBehaviour
     public ParticleSystem muzzleFlash;
     Animator anim;
 
+    public Text infoText;
     //public GameObject impactEffect;
-    private float magazine = 30;
+    private float bullet = 30;
     private float ammunition = 120;
-    private float magazineCapacity = 30;
+    private float bulletCapacity = 30;
     public float range = 100f;
 
     AudioSource audioSrc;
@@ -36,15 +37,15 @@ public class RaycastShooting : MonoBehaviour
         {
             if (Input.GetMouseButton(0))
             {
-                if (magazine > 0)
+                if (bullet > 0)
                 {
                     anim.SetBool("Shooting", true);
                 }
-                if (magazine <= 0)
+                if (bullet <= 0)
                 {
                     anim.SetBool("Shooting", false);
                 }
-                if (magazine <= 0 && ammunition > 0)
+                if (bullet <= 0 && ammunition > 0)
                 {
                     anim.SetBool("Reload", true);
                 }
@@ -66,14 +67,14 @@ public class RaycastShooting : MonoBehaviour
     public void Reload()
     {
         audioSrc.volume = 1f;
-        ammunition -= magazineCapacity - magazine;
-        magazine = magazineCapacity;
+        ammunition -= bulletCapacity - bullet;
+        bullet = bulletCapacity;
         anim.SetBool("Reload", false);
 
     }
     public void Shooting()
     {
-        if (magazine > 0)
+        if (bullet > 0)
         {
             muzzleFlash.Play();
             audioSrc.PlayOneShot(shootingAudio);
@@ -88,15 +89,18 @@ public class RaycastShooting : MonoBehaviour
                 }
                // Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             }
-            magazine--;
+            bullet--;
+        }
+        else{
+            infoText.text="No more bullets.";
         }
 
 
     }
     
-    public float GetMagazine()
+    public float GetBullet()
     {
-        return magazine;
+        return bullet;
     }
     public float GetAmmunition()
     {
@@ -106,9 +110,9 @@ public class RaycastShooting : MonoBehaviour
     {
         ammunition+=addedAmmunition;
     }
-    public float GetMagazineCapacity()
+    public float GetBulletCapacity()
     {
-        return magazineCapacity;
+        return bulletCapacity;
     }
     private void OnTriggerEnter(Collider other)
     {

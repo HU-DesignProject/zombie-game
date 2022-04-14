@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
+
 
 public class KarakterKontrol : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class KarakterKontrol : MonoBehaviour
     private float ySpeed;
 
     private float saglik = 100;
+    private float maxHealth = 100;
     bool hayattaMi;
 
     private int healthPack=0; 
@@ -37,7 +40,8 @@ public class KarakterKontrol : MonoBehaviour
 
     PlayerHealth healthBar;
 
-    
+    public Text infoText;
+
 
     PhotonView view;
     void Start()
@@ -71,13 +75,15 @@ public class KarakterKontrol : MonoBehaviour
             {
                 Hareket();
                 m_IsWalking = true;
-
-                /*if(isGrounded==true){
+                
+                if(isGrounded==true){
                     lastGroundedTime=Time.time;
                 }
                 if(Input.GetButtonDown("Jump")){
                     jumpButtonPressedTime=Time.time;
+                    //Jump();
                 }
+                /*
                 if(Time.time-lastGroundedTime<=jumpButtonGracePeriod){
                     ySpeed=-0.5f;
                     anim.SetBool("IsGrounded",true);
@@ -132,6 +138,10 @@ public class KarakterKontrol : MonoBehaviour
         anim.SetFloat("Horizontal", yatay);
         anim.SetFloat("Vertical", dikey);
         this.gameObject.transform.Translate(yatay * karakterHiz*Time.deltaTime, 0, dikey * karakterHiz*Time.deltaTime);
+        if(Input.GetKey(KeyCode.LeftShift)){
+            this.gameObject.transform.Translate(yatay * karakterHiz*2*Time.deltaTime, 0, dikey * karakterHiz*Time.deltaTime);
+
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -162,8 +172,43 @@ public class KarakterKontrol : MonoBehaviour
     public void AddHealthPack(){
         healthPack++;
     }
-    public void UseHealthPack(){
-        healthPack--;
+    public void UseHealthPack(float healAmount){
+        if(healthPack>0){
+            saglik+=healAmount;
+            healthPack--;
+        }
+        else{
+            infoText.text="No more healty pack.";
+            infoText.enabled=true;
+        }
+        
+    }
+
+    public void Jump(){
+        if(Time.time-lastGroundedTime<=jumpButtonGracePeriod){
+            ySpeed=-0.5f;
+            anim.SetBool("IsGrounded",true);
+            isGrounded=true;
+            anim.SetBool("IsJumping",false);
+            isJumping=false;
+            anim.SetBool("IsFalling",false);
+                
+            if(Time.time-jumpButtonPressedTime<=jumpButtonGracePeriod){
+                ySpeed=jumpSpeed;
+                anim.SetBool("IsJumping",true);
+                isJumping=true;
+                jumpButtonPressedTime=null;
+                lastGroundedTime=null;    
+            }
+            
+            else{
+                anim.SetBool("IsGrounded",false);
+                isGrounded=false;
+                if((isJumping && ySpeed<0)|| ySpeed<-2){
+                    anim.SetBool("IsFalling",true);
+                }
+            }
+        }
     }
 
 }

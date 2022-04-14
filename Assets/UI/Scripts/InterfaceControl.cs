@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class InterfaceControl : MonoBehaviour
 {
-    public Text magazineText;
+    public Text bulletText;
     public Text healthPackText;
     //public GameObject sahteMenu;
 
@@ -20,7 +20,7 @@ public class InterfaceControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        magazineText.text = player.GetComponent<RaycastShooting>().GetMagazine().ToString()+"/"+ player.GetComponent<RaycastShooting>().GetAmmunition().ToString();
+        bulletText.text = player.GetComponent<RaycastShooting>().GetBullet().ToString()+"/"+ player.GetComponent<RaycastShooting>().GetAmmunition().ToString();
         healthPackText.text = player.GetComponent<KarakterKontrol>().GetHealthPack().ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
         {

@@ -62,7 +62,7 @@ public class Pickup : MonoBehaviour
     void PickupPistolAmmo(){
         if(Input.GetKeyDown(KeyCode.E)){
             Destroy(hit.transform.gameObject);
-            pistolScript.SetAmmunition(pistolScript.GetMagazineCapacity());
+            pistolScript.SetAmmunition(pistolScript.GetBulletCapacity());
             pickupAS.PlayOneShot(pickupAmmoAC);
             pickupText.enabled=false;
         }
