@@ -60,7 +60,7 @@ using Photon.Realtime;
 				    Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-					PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f,5f,0f), Quaternion.identity, 0);
+					PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
 				}else{
 
 					Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
@@ -148,7 +148,7 @@ using Photon.Realtime;
 		/// </summary>
 		public override void OnLeftRoom()
 		{
-			SceneManager.LoadScene("Lobby");
+			SceneManager.LoadScene("Launcher");
 		}
 
         #endregion

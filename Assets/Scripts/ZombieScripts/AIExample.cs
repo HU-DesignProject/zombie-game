@@ -18,7 +18,7 @@ public class AIExample : MonoBehaviour {
     public float viewDistance = 5f;
     public float wanderRadius = 7f;
     public float loseThreshold = 10f; //time in seconds until we lose the player after we stop detecting
-    public Transform[] waypoints; //Array of waypoints is only used when waypoint wandering is selected
+    //public Transform[] waypoints; //Array of waypoints is only used when waypoint wandering is selected
 
     private bool isAware = false;
     private bool isDetecting = false;
@@ -174,8 +174,8 @@ public class AIExample : MonoBehaviour {
 
     public void Wander()
     {
-        if (wanderType == WanderType.Random)
-        {
+        //if (wanderType == WanderType.Random)
+        //{
             if (Vector3.Distance(transform.position, wanderPoint) < 2f)
             {
                 wanderPoint = RandomWanderPoint();
@@ -184,8 +184,8 @@ public class AIExample : MonoBehaviour {
             {
                 agent.SetDestination(wanderPoint);
             }
-        }
-        else
+        //}
+        /*else
         {
             //Waypoint wandering
             if (waypoints.Length >= 2)
@@ -209,7 +209,7 @@ public class AIExample : MonoBehaviour {
             {
                 Debug.LogWarning("Please assign more than 1 waypoint to the AI: " + gameObject.name);
             }
-        }
+        }*/
     }
 
      public void GetDamage(int damage) 

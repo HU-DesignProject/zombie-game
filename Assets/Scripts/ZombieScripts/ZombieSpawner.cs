@@ -10,43 +10,67 @@ public class ZombieSpawner : MonoBehaviour {
     public int zombieCountInMaze;
 	public GameObject maze;
 	public byte[,] map;
-    public void Start()
-    {
-		//maze = GetComponent<PipeMaze>();
+	public List<Vector3> positionList;
+
+    public void Start() {
 		//maze = GameObject.Find("Maze");
 
-		SpawnZombieInMaze();
-        StartCoroutine(SpawnZombie(0,0));
+		positionList = SpawnZombieInMaze();
+        //StartCoroutine(SpawnZombie(0,0));
 		//SpawnZombie(0,0);
+
+	
+		StartCoroutine(SpawnZombie());
 
     }
 
-	public async void SpawnZombieInMaze()
+	public List<Vector3> SpawnZombieInMaze()
     {
 
-		map = maze.GetComponent<PipeRecursive>().SendMap();
-		int depth = maze.GetComponent<PipeRecursive>().depth;
-		int width = maze.GetComponent<PipeRecursive>().width;
-		
-		for (int z = 0; z < depth; z++)
+		map = maze.GetComponent<DockRecursive>().SendMap();
+		int depth = maze.GetComponent<DockRecursive>().depth;
+		int width = maze.GetComponent<DockRecursive>().width;
+		int initialX = maze.GetComponent<DockRecursive>().initialX;
+		//int initialY = maze.GetComponent<DockRecursive>().initialY;
+		int initialY = 9;
+		int initialZ = maze.GetComponent<DockRecursive>().initialZ;
+		int scale = maze.GetComponent<DockRecursive>().scale;
+
+		for (int z = 0; z < depth; z++){
             for (int x = 0; x < width; x++)
             {
                 if (map[x, z] != 1)
                 {
-					StartCoroutine(SpawnZombie(x, z));
+					positionList.Add(new Vector3(initialX + scale * x, initialY, initialZ + scale * z));
+					//StartCoroutine(SpawnZombie(x, z));
 				}
 			}
-		
+		}
+		return positionList;
     }
-    IEnumerator SpawnZombie(int x, int z)
-    {
+
+	IEnumerator SpawnZombie () {
+		while (zombieCount < 10 )
+        {
+			
+			//Vector3 currentV = positionList[Random.Range(0, positionList.Count)];
+			Vector3 currentV = new Vector3(Random.Range(-5, 0) , 9, Random.Range(16, 60));
+			yield return new WaitForSeconds(5f);
+            Instantiate(theZombie, currentV, Quaternion.identity);
+            
+            zombieCount += 1;
+        }
+	}
+
+
+    //IEnumerator SpawnZombie(){
 		//int initialX = maze.GetComponent<PipeRecursive>().initialX;
 		//int initialY = maze.GetComponent<PipeRecursive>().initialY;
 		//int initialZ = maze.GetComponent<PipeRecursive>().initialZ;
 		//int scale = maze.GetComponent<PipeRecursive>().scale;
-
-		yield return new WaitForSeconds(5f);
-		Instantiate(theZombie, new Vector3(x, 0, z), Quaternion.identity);
+//
+		//yield return new WaitForSeconds(5f);
+		//Instantiate(theZombie, new Vector3(initialX + scale * x, initialY, initialZ + scale * z), Quaternion.identity);
 
 
 		
@@ -56,7 +80,7 @@ public class ZombieSpawner : MonoBehaviour {
             yield return new WaitForSeconds(5f);
             zombieCount += 1;
         }*/
-    }
+    //}
 
 
 /*

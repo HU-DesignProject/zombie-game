@@ -38,7 +38,7 @@ public class DockMaze : MonoBehaviour
     public Transform parent;
 
 
-    public GameObject FPC;
+    //public GameObject FPC;
 
     // Start is called before the first frame update
     void Start()
@@ -46,7 +46,7 @@ public class DockMaze : MonoBehaviour
         InitialiseMap();
         Generate();
         DrawMap();
-        PlaceFPS();
+        //PlaceFPS();
     }
 
     void InitialiseMap()
@@ -71,6 +71,11 @@ public class DockMaze : MonoBehaviour
         }
     }
 
+     public byte[,] SendMap()
+    {
+        return map;
+    }
+    
     public virtual void PlaceFPS()
     {
         for (int z = 0; z < depth; z++)
@@ -79,7 +84,7 @@ public class DockMaze : MonoBehaviour
             {
                 if (map[x, z] == 0)
                 {
-                    FPC.transform.position = new Vector3(initialX + x * scale, initialY + 6, initialZ + z * scale);
+                    //FPC.transform.position = new Vector3(initialX + x * scale, initialY + 6, initialZ + z * scale);
                     return;
                 }
             }
@@ -146,7 +151,7 @@ public class DockMaze : MonoBehaviour
                 {
                     Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     Instantiate(straight, pos, Quaternion.identity);
-                    straight.transform.SetParent(parent);
+                    //straight.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) //horizontal straight
                 {
@@ -219,7 +224,7 @@ public class DockMaze : MonoBehaviour
 
 
             }
-        PlaceFPS();
+        //PlaceFPS();
     }
 
     public bool Search2D(int c, int r, int[] pattern)
