@@ -54,6 +54,7 @@ public class AIExample : MonoBehaviour {
         playerList = GameObject.FindGameObjectsWithTag("Player");
         Debug.Log("playerList  ", playerList[0]);
         fpsc = playerList[0];
+
         //fpsc = GetComponent<GameObject>();
         renderer = GetComponent<Renderer>();
         animator = GetComponentInChildren<Animator>();
@@ -86,7 +87,7 @@ public class AIExample : MonoBehaviour {
             }
         if (health <= 0)
         {
-            Die();
+            StartCoroutine(Die());
             return;
         }
         if (isAware)
@@ -124,15 +125,18 @@ public class AIExample : MonoBehaviour {
 
     public void SearchForPlayer()
     {
-        if (Vector3.Angle(Vector3.forward, transform.InverseTransformPoint(fpsc.transform.position)) < fov / 2f)
+        for (int i = 0; i < playerList.Length; i++) {
+
+            if (Vector3.Angle(Vector3.forward, transform.InverseTransformPoint(playerList[i].transform.position)) < fov / 2f)
         {
-            if (Vector3.Distance(fpsc.transform.position, transform.position) < viewDistanceIfInAngle)
+            if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistanceIfInAngle)
             {
                 RaycastHit hit;
-                if (Physics.Linecast(transform.position, fpsc.transform.position, out hit, -1))
+                if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
                 {
                     if (hit.transform.CompareTag("Player"))
                     {
+                        fpsc = playerList[i];
                         OnAware();
                     } else {
                         isDetecting = false;
@@ -144,13 +148,14 @@ public class AIExample : MonoBehaviour {
                 isDetecting = false;
             }
         } else {
-            if (Vector3.Distance(fpsc.transform.position, transform.position) < viewDistance / 2f)
+            if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistance / 2f)
             {
                 RaycastHit hit;
-                if (Physics.Linecast(transform.position, fpsc.transform.position, out hit, -1))
+                if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
                 {
                     if (hit.transform.CompareTag("Player"))
                     {
+                        fpsc = playerList[i];
                         OnAware();
                     } else {
                         isDetecting = false;
@@ -162,6 +167,9 @@ public class AIExample : MonoBehaviour {
                 isDetecting = false;
             }
         }
+
+        }
+        
     }
 
     public void OnCollisionEnter(Collision collision)
@@ -204,7 +212,7 @@ public class AIExample : MonoBehaviour {
         
     }
 
-    public void Die()
+    IEnumerator Die()
     {
         isDestroyed = true;
         agent.speed = 0;
@@ -219,6 +227,7 @@ public class AIExample : MonoBehaviour {
         {
             rb.isKinematic = false;
         }
+        yield return new WaitForSeconds(5f);
         PhotonNetwork.Destroy(agent.gameObject);
     }
 
@@ -269,7 +278,7 @@ public class AIExample : MonoBehaviour {
 
     public void SetDamageSound()
     {
-        soundSource.PlayOneShot(attackSound);
+        //soundSource.PlayOneShot(attackSound);
     }
 
     public void DoDamage()
