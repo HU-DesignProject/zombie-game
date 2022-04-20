@@ -8,9 +8,10 @@ using UnityEngine.SceneManagement;
 
 using Photon.Pun;
 using Photon.Realtime;
+using Photon.Pun.UtilityScripts;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-
-    public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : MonoBehaviourPunCallbacks
     {
 
         #region Public Fields
@@ -26,6 +27,7 @@ using Photon.Realtime;
         [Tooltip("The prefab to use for representing the player")]
         [SerializeField]
         private GameObject playerPrefab;
+        public GameObject zombiePrefab;
 
         #endregion
 
@@ -37,9 +39,21 @@ using Photon.Realtime;
         /// Called when the local player left the room. We need to load the launcher scene.
         /// </summary>
 
-        void Start() 
+        public void Awake()
         {
             Instance = this;
+        }
+
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            CountdownTimer.OnCountdownTimerHasExpired += OnCountdownTimerIsExpired;
+
+        }
+        
+        void Start() 
+        {
 
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
@@ -48,6 +62,13 @@ using Photon.Realtime;
 
 				return;
 			}
+
+            Hashtable props = new Hashtable
+            {
+                {ZombieGame.PLAYER_LOADED_LEVEL, true}
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
 
             if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
@@ -61,7 +82,8 @@ using Photon.Realtime;
 
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
 					PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
-				}else{
+                    StartGame();
+                 }else{
 
 					Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
 				}
@@ -70,6 +92,13 @@ using Photon.Realtime;
 			}
 
             topPanel.SetActive(false);
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            CountdownTimer.OnCountdownTimerHasExpired -= OnCountdownTimerIsExpired;
         }
 
         void Update() 
@@ -96,7 +125,19 @@ using Photon.Realtime;
         #endregion
 
 
-        
+        private IEnumerator SpawnZombie()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(UnityEngine.Random.Range(ZombieGame.ASTEROIDS_MIN_SPAWN_TIME, ZombieGame.ASTEROIDS_MAX_SPAWN_TIME));
+
+                Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
+
+
+                PhotonNetwork.InstantiateRoomObject(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
+            }
+        }
+
 
         void LoadArena()
         {
@@ -111,24 +152,25 @@ using Photon.Realtime;
 
         #region Photon Callbacks
 
-        public override void OnPlayerEnteredRoom(Player other)
-        {
-            Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
-
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-
-                //LoadArena();
-            }
-        }
+        //public override void OnPlayerEnteredRoom(Player other)
+        //{
+        //    Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
+//
+//
+        //    if (PhotonNetwork.IsMasterClient)
+        //    {
+        //        Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+//
+//
+        //        //LoadArena();
+        //    }
+        //}
 
         /// <summary>
 		/// Called when a Photon Player got disconnected. We need to load a smaller scene.
 		/// </summary>
 		/// <param name="other">Other.</param>
+
         public override void OnPlayerLeftRoom(Player other)
         {
             Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
@@ -153,6 +195,96 @@ using Photon.Realtime;
 
         #endregion
 
+        public override void OnMasterClientSwitched(Player newMasterClient)
+        {
+            if (PhotonNetwork.LocalPlayer.ActorNumber == newMasterClient.ActorNumber)
+            {
+                StartCoroutine(SpawnZombie());
+            }
+        }
+
+        private void StartGame()
+        {
+            Debug.Log("StartGame!");
+
+            // on rejoin, we have to figure out if the spaceship exists or not
+            // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
+
+            Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
+
+
+            PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
+            
+
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                StartCoroutine(SpawnZombie());
+            }
+        }
+
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        {
+            if (changedProps.ContainsKey(ZombieGame.PLAYER_LIVES))
+            {
+                //CheckEndOfGame();
+                return;
+            }
+
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                return;
+            }
+
+
+            // if there was no countdown yet, the master client (this one) waits until everyone loaded the level and sets a timer start
+            int startTimestamp;
+            bool startTimeIsSet = CountdownTimer.TryGetStartTime(out startTimestamp);
+
+            if (changedProps.ContainsKey(ZombieGame.PLAYER_LOADED_LEVEL))
+            {
+                if (CheckAllPlayerLoadedLevel())
+                {
+                    if (!startTimeIsSet)
+                    {
+                        CountdownTimer.SetStartTime();
+                    }
+                }
+                else
+                {
+                    // not all players loaded yet. wait:
+                    //Debug.Log("setting text waiting for players! ",this.InfoText);
+                    //InfoText.text = "Waiting for other players...";
+                }
+            }
+        
+        }
+
+        private bool CheckAllPlayerLoadedLevel()
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                object playerLoadedLevel;
+
+                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_LOADED_LEVEL, out playerLoadedLevel))
+                {
+                    if ((bool) playerLoadedLevel)
+                    {
+                        continue;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private void OnCountdownTimerIsExpired()
+        {
+            StartGame();
+        }
+        
         #region Public Methods
 
 		public void LeaveRoom()

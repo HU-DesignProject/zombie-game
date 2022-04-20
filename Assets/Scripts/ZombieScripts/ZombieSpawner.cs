@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
+
 
 public class ZombieSpawner : MonoBehaviour {
 
@@ -56,7 +58,7 @@ public class ZombieSpawner : MonoBehaviour {
 			//Vector3 currentV = positionList[Random.Range(0, positionList.Count)];
 			Vector3 currentV = new Vector3(Random.Range(-5, 0) , 9, Random.Range(16, 60));
 			yield return new WaitForSeconds(5f);
-            Instantiate(theZombie, currentV, Quaternion.identity);
+			PhotonNetwork.Instantiate(this.theZombie.name, currentV, Quaternion.identity);
             
             zombieCount += 1;
         }

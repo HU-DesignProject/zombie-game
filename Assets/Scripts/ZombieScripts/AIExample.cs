@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
 public class AIExample : MonoBehaviour {
 
@@ -31,17 +32,25 @@ public class AIExample : MonoBehaviour {
     private Animator animator;
     AudioSource soundSource;
     public AudioClip attackSound;
-
+    private PhotonView photonView;
+    private bool isDestroyed;
 
     private float loseTimer = 0;
 
     private Collider[] ragdollColliders;
     private Rigidbody[] ragdollRigidbodies;
 
+    public void Awake()
+    {
+       
+    }
     public void Start()
     {
+
+        photonView = GetComponent<PhotonView>();
         Debug.Log("zombie start");
         agent = GetComponent<NavMeshAgent>();
+        
         playerList = GameObject.FindGameObjectsWithTag("Player");
         Debug.Log("playerList  ", playerList[0]);
         fpsc = playerList[0];
@@ -65,9 +74,16 @@ public class AIExample : MonoBehaviour {
         {
             rb.isKinematic = true;
         }
+
+        
+        
     }
     public void Update()
     {
+        if (!photonView.IsMine)
+            {
+                return;
+            }
         if (health <= 0)
         {
             Die();
@@ -148,6 +164,38 @@ public class AIExample : MonoBehaviour {
         }
     }
 
+    public void OnCollisionEnter(Collision collision)
+        {
+            if (isDestroyed)
+            {
+                return;
+            }
+
+            //if (collision.gameObject.CompareTag("Bullet"))
+            //{
+            //    if (photonView.IsMine)
+            //    {
+            //        //Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+            //        //bullet.Owner.AddScore(isLargeAsteroid ? 2 : 1);
+////
+            //        //DestroyAsteroidGlobally();
+            //    }
+            //    else
+            //    {
+            //        //DestroyAsteroidLocally();
+            //    }
+            //}
+            //else if (collision.gameObject.CompareTag("Player"))
+            //{
+            //    if (photonView.IsMine)
+            //    {
+            //        collision.gameObject.GetComponent<PhotonView>().RPC("DestroySpaceship", RpcTarget.All);
+//
+            //        //DestroyAsteroidGlobally();
+            //    }
+            //}
+        }
+
     public void OnAware()
     {   
         isAware = true;
@@ -158,6 +206,7 @@ public class AIExample : MonoBehaviour {
 
     public void Die()
     {
+        isDestroyed = true;
         agent.speed = 0;
         animator.enabled = false;
 
@@ -170,6 +219,7 @@ public class AIExample : MonoBehaviour {
         {
             rb.isKinematic = false;
         }
+        PhotonNetwork.Destroy(agent.gameObject);
     }
 
     public void Wander()
