@@ -29,7 +29,7 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         targetPlayer = GameObject.Find("SWAT");
-        health=targetPlayer.GetComponent<KarakterKontrol>().GetSaglik();
+        health=targetPlayer.GetComponent<KarakterKontrol>().GetPlayerHealth();
         damageImage.enabled=false;
 
 

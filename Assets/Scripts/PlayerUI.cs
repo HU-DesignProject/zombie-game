@@ -10,7 +10,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-
+using Photon.Pun;
 
 
 	/// <summary>
@@ -48,7 +48,6 @@ using UnityEngine.UI;
 	    CanvasGroup _canvasGroup;
 	    
 		Vector3 targetPosition;
-
 		#endregion
 
 		#region MonoBehaviour Messages
@@ -58,10 +57,13 @@ using UnityEngine.UI;
 		/// </summary>
 		void Awake()
 		{
-            Debug.Log("playerUIdayım");
+			
+ 			Debug.Log("playerUIdayım");
 			_canvasGroup = this.GetComponent<CanvasGroup>();
 			
 			this.transform.SetParent(GameObject.Find("Canvas").GetComponent<Transform>(), false);
+			
+           
 		}
 
 		/// <summary>
@@ -70,7 +72,7 @@ using UnityEngine.UI;
 		/// </summary>
 		void Update()
 		{
-			// Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
+				// Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
 			if (target == null) {
 				Destroy(this.gameObject);
 				return;
@@ -79,12 +81,14 @@ using UnityEngine.UI;
 
 			// Reflect the Player Health
 			if (playerHealthSlider != null) {
-				playerHealthSlider.value = target.saglik;
+				playerHealthSlider.value = target.playerHealth;
 			}
 
 			if (bulletCount.text != null) {
-				bulletCount.text = target.GetComponent<AtesSistemi>().GetSarjor().ToString();
+				bulletCount.text = this.target.photonView.Owner.BulletCount.ToString();
 			}
+			
+			
 		}
 
 		/// <summary>

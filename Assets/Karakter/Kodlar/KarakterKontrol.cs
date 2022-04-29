@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 
-public class KarakterKontrol : MonoBehaviour
+public class KarakterKontrol : MonoBehaviour, IPunObservable
 {
     Animator anim;
     [SerializeField]
@@ -39,7 +39,9 @@ public class KarakterKontrol : MonoBehaviour
 
     #region Public Fields
     [Tooltip("The current Health of our player")]
-    public float saglik = 100f;
+    public float playerHealth = 100f;
+    public float bulletCount;
+
     [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;
     #endregion
@@ -147,15 +149,15 @@ public class KarakterKontrol : MonoBehaviour
                 sphereCollider.radius = sprintEnemyPerceptionRadius;
             }
 
-            if (saglik <= 0)
+            if (playerHealth <= 0)
             {
-                saglik = 0;
+                playerHealth = 0;
                 hayattaMi = false;
                 anim.SetBool("yasiyorMu", hayattaMi);
             }
-            if (saglik >= 100)
+            if (playerHealth >= 100)
             {
-                saglik = 100;
+                playerHealth = 100;
             }
 
             if (hayattaMi == true)
@@ -200,9 +202,9 @@ public class KarakterKontrol : MonoBehaviour
             
         }
     }
-    public float GetSaglik()
+    public float GetPlayerHealth()
     {
-        return saglik;
+        return playerHealth;
     }
     public bool YasiyorMu()
     {
@@ -213,7 +215,7 @@ public class KarakterKontrol : MonoBehaviour
         srcSound.PlayOneShot(painSound);
         anim.SetBool("Damage",true);
         float damage=Random.Range(5, 10);
-        saglik -= damage;
+        playerHealth -= damage;
         healthBar.TakeDamage(damage);
         anim.SetBool("Damage",false);
     }
@@ -233,17 +235,36 @@ public class KarakterKontrol : MonoBehaviour
             }
         if (other.gameObject.tag == "SaglikKutusu")
         {
-            if (saglik < 100)
+            if (playerHealth < 100)
             {
-                saglik += Random.Range(10, 25);
+                playerHealth += Random.Range(10, 25);
 
-                Destroy(other.gameObject);
+                //Destroy(other.gameObject);
+                DestroyPlayerObject(other);
             }
         }
         if (other.gameObject.CompareTag("Zombi"))
         {
             other.GetComponent<AIExample>().OnAware();
         }
+    }
+
+    public void DestroyPlayerObject(Collider other) {
+        if (!photonView.IsMine)
+            {
+                return;
+            }
+        PhotonNetwork.Destroy(other.gameObject);
+
+    }
+
+    public void DestroyPlayerObject() {
+        if (!photonView.IsMine)
+            {
+                return;
+            }
+        //PhotonNetwork.Destroy(this.f);
+
     }
      public int GetPlayerStealthProfile()
         {
@@ -290,17 +311,21 @@ public class KarakterKontrol : MonoBehaviour
             {
                 // We own this player: send the others our data
                 //stream.SendNext(this.IsFiring);
-                stream.SendNext(this.saglik);
+                stream.SendNext(this.playerHealth);
+                stream.SendNext(this.bulletCount);
             }
             else
             {
                 // Network player, receive data
                 //this.IsFiring = (bool)stream.ReceiveNext();
-                this.saglik = (float)stream.ReceiveNext();
+                this.playerHealth = (float)stream.ReceiveNext();
+                this.bulletCount = (float)stream.ReceiveNext();
             }
         }
 
         #endregion
+
+      
 
     public void Fire()
     {

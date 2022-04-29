@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using Photon.Pun;
 public class AtesSistemi : MonoBehaviour
 {
+    
     Camera kamera;
     public LayerMask zombiKatman;
     KarakterKontrol hpKontrol;
@@ -15,7 +16,7 @@ public class AtesSistemi : MonoBehaviour
     private float cephane = 120;
     private float sarjorKapasitesi = 30;
     public float range = 100f;
-
+    public PhotonView pView;
     AudioSource sesKaynagi;
     public AudioClip atesSes;
     public AudioClip reloadSes;
@@ -23,6 +24,7 @@ public class AtesSistemi : MonoBehaviour
     {
             kamera = Camera.main;
             hpKontrol = this.gameObject.GetComponent<KarakterKontrol>();
+            this.hpKontrol.photonView.Owner.BulletCount = sarjor.ToString();
             anim = this.gameObject.GetComponent<Animator>();
             sesKaynagi= this.gameObject.GetComponent<AudioSource>();
                 
@@ -75,6 +77,8 @@ public class AtesSistemi : MonoBehaviour
     {
         if (sarjor > 0)
         {
+            hpKontrol.bulletCount = sarjor;
+            this.hpKontrol.photonView.Owner.BulletCount = sarjor.ToString();
             muzzleFlash.Play();
             sesKaynagi.PlayOneShot(atesSes);
             Ray ray = kamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));

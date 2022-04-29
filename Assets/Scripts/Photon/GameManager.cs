@@ -179,8 +179,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-
+                
+                //DestroyPlayerObject(other);
+                PhotonNetwork.DestroyPlayerObjects(other);
                 //LoadArena();
             }
         }

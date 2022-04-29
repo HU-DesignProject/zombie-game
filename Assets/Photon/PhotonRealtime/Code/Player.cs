@@ -68,6 +68,7 @@ namespace Photon.Realtime
 
         /// <summary>Background field for nickName.</summary>
 		private string nickName = string.Empty;
+		private string bulletCount = string.Empty;
 
         /// <summary>Non-unique nickname of this player. Synced automatically in a room.</summary>
         /// <remarks>
@@ -88,6 +89,29 @@ namespace Photon.Realtime
                 }
 
                 this.nickName = value;
+
+                // update a room, if we changed our nickName locally
+                if (this.IsLocal)
+                {
+                    this.SetPlayerNameProperty();
+                }
+            }
+        }
+
+        public string BulletCount
+        {
+            get
+            {
+                return this.bulletCount;
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(this.bulletCount) && this.bulletCount.Equals(value))
+                {
+                    return;
+                }
+
+                this.bulletCount = value;
 
                 // update a room, if we changed our nickName locally
                 if (this.IsLocal)

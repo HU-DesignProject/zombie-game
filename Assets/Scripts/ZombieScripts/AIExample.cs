@@ -63,7 +63,9 @@ public class AIExample : MonoBehaviour {
         ragdollColliders = GetComponentsInChildren<Collider>();
         ragdollRigidbodies = GetComponentsInChildren<Rigidbody>();
 
-        foreach (Collider col in ragdollColliders)
+        if (photonView.IsMine)
+        {
+            foreach (Collider col in ragdollColliders)
         {
             if (!col.CompareTag("Zombi"))
             {
@@ -75,6 +77,8 @@ public class AIExample : MonoBehaviour {
         {
             rb.isKinematic = true;
         }
+        }
+        
 
         
         
@@ -106,7 +110,7 @@ public class AIExample : MonoBehaviour {
             if(Vector3.Distance(agent.transform.position, fpsc.transform.position) < 2f)
             {
                 animator.SetBool("Attack", true);
-                //DoDamage();
+                DoDamage();
                 SetDamageSound();
             } else {
                 animator.SetBool("Attack", false);
@@ -229,6 +233,9 @@ public class AIExample : MonoBehaviour {
         }
         yield return new WaitForSeconds(5f);
         PhotonNetwork.Destroy(agent.gameObject);
+        
+
+        
     }
 
     public void Wander()
@@ -283,6 +290,7 @@ public class AIExample : MonoBehaviour {
 
     public void DoDamage()
     {
+        Debug.Log("hasar aldi");
         fpsc.GetComponent<KarakterKontrol>().HasarAl();
     }
 
