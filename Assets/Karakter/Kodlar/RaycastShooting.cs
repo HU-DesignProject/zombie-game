@@ -2,12 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using Photon.Pun;
 using UnityEngine.UI;
-public class AtesSistemi : MonoBehaviour
-{
-    public PhotonView pView;
 
+public class RaycastShooting : MonoBehaviour
+{
     Camera cam;
     public LayerMask zombieLayer;
     KarakterKontrol hpCheck;
@@ -24,19 +22,14 @@ public class AtesSistemi : MonoBehaviour
     AudioSource audioSrc;
     public AudioClip shootingAudio;
     public AudioClip reloadAudio;
-
     void Start()
     {
-            this.hpKontrol.photonView.Owner.BulletCount = bullet.ToString();
-
-            cam = Camera.main;
-            hpCheck = this.gameObject.GetComponent<KarakterKontrol>();
-            anim = this.gameObject.GetComponent<Animator>();
-            audioSrc= this.gameObject.GetComponent<AudioSource>();
-                
+        cam = Camera.main;
+        hpCheck = this.gameObject.GetComponent<KarakterKontrol>();
+        anim = this.gameObject.GetComponent<Animator>();
+        audioSrc= this.gameObject.GetComponent<AudioSource>();
     }
 
-   
     // Update is called once per frame
     void Update()
     {
@@ -130,5 +123,7 @@ public class AtesSistemi : MonoBehaviour
         }
     }
   
-  
+
+   
+
 }

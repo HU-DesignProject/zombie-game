@@ -6,22 +6,22 @@ using UnityEngine.UI;
 
 public class ArayuzKontrol : MonoBehaviour
 {
-    public Text mermiText;
-    public Text saglikText;
+    public Text bulletText;
+    public Text healthPackText;
     //public GameObject sahteMenu;
 
     bool oyunDurdu;
-    GameObject oyuncu;
+    GameObject player;
     void Start()
     {
-        oyuncu = GameObject.Find("SWAT");
+        player = GameObject.Find("SWAT");
     }
 
     // Update is called once per frame
     void Update()
     {
-        //mermiText.text = oyuncu.GetComponent<AtesSistemi>().GetSarjor().ToString()+"/"+ oyuncu.GetComponent<AtesSistemi>().GetCephane().ToString();
-        //saglikText.text = "HP:" + oyuncu.GetComponent<KarakterKontrol>().GetSaglik();
+        bulletText.text = player.GetComponent<RaycastShooting>().GetBullet().ToString()+"/"+ player.GetComponent<RaycastShooting>().GetAmmunition().ToString();
+        healthPackText.text = player.GetComponent<KarakterKontrol>().GetHealthPack().ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (oyunDurdu == true)
