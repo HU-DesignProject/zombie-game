@@ -147,9 +147,9 @@ public class ZombieSpawner : MonoBehaviour {
 
 		foreach(GameObject spawnPoint in spawnPoints) {
 			GameObject zombie = enemies[0];
-			zombie.GetComponent<AIExample>().fpsc = target;
+			zombie.GetComponent<ZombieAI>().fpsc = target;
 			zombie.GetComponent<NavMeshAgent>().speed = currentMoveSpeed;
-			zombie.GetComponent<AIExample>().health = currentHealth;
+			zombie.GetComponent<ZombieAI>().health = currentHealth;
 
 			// Boost rotating speed
 			float rotateSpeed = 120f + currentMoveSpeed;

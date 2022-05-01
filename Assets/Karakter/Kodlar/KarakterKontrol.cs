@@ -151,9 +151,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
 
             if (playerHealth <= 0)
             {
-                playerHealth = 0;
-                hayattaMi = false;
-                anim.SetBool("yasiyorMu", hayattaMi);
+                StartCoroutine(CharacterDie());
             }
             if (playerHealth >= 100)
             {
@@ -245,7 +243,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         }
         if (other.gameObject.CompareTag("Zombi"))
         {
-            other.GetComponent<AIExample>().OnAware();
+            other.GetComponent<ZombieAI>().OnAware();
         }
     }
 
@@ -333,8 +331,18 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         Collider[] zombies = Physics.OverlapSphere(transform.position, soundIntensity, zombieLayer);
         for (int i = 0; i < zombies.Length; i++)
         {
-            zombies[i].GetComponent<AIExample>().OnAware();
+            zombies[i].GetComponent<ZombieAI>().OnAware();
         } 
     }
     
+    IEnumerator CharacterDie()
+    {
+        playerHealth = 0;
+        hayattaMi = false;
+        anim.SetBool("yasiyorMu", hayattaMi);
+        yield return new WaitForSeconds(5f);
+        PhotonNetwork.Destroy(LocalPlayerInstance);
+        GetComponent<GameManager>().QuitApplication();
+        
+    }
 }   

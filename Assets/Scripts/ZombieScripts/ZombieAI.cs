@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
 
-public class AIExample : MonoBehaviour {
+public class ZombieAI : MonoBehaviour {
 
     public enum WanderType { Random, Waypoint};
     private GameObject fpsc;
@@ -109,9 +109,12 @@ public class AIExample : MonoBehaviour {
 
             if(Vector3.Distance(agent.transform.position, fpsc.transform.position) < 2f)
             {
-                animator.SetBool("Attack", true);
-                DoDamage();
-                SetDamageSound();
+                if (isAttacking == false)
+                {
+                    animator.SetBool("Attack", true);
+                    StartCoroutine(DoDamage());
+                    SetDamageSound();
+                }
             } else {
                 animator.SetBool("Attack", false);
             }
@@ -288,10 +291,14 @@ public class AIExample : MonoBehaviour {
         //soundSource.PlayOneShot(attackSound);
     }
 
-    public void DoDamage()
+    IEnumerator DoDamage()
     {
+        isAttacking = true;
         Debug.Log("hasar aldi");
         fpsc.GetComponent<KarakterKontrol>().HasarAl();
+        yield return new WaitForSeconds(5f);
+        Debug.Log("1f gecti");
+        isAttacking = false;
     }
 
     public Vector3 RandomWanderPoint()
