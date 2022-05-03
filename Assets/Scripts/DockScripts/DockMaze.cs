@@ -149,16 +149,21 @@ public class DockMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 0, 5 })) //vertical straight
                 {
-                    Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    Instantiate(straight, pos, Quaternion.identity);
-                    //straight.transform.SetParent(parent);
+                    GameObject block = Instantiate(straight);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                    block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) //horizontal straight
                 {
-                    Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    GameObject go = Instantiate(straight, pos, Quaternion.identity);
-                    go.transform.Rotate(0, 90, 0);
-                    go.transform.SetParent(parent);
+                    GameObject block = Instantiate(straight);
+                    block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                    block.transform.Rotate(0, 90, 0);
+                    block.transform.SetParent(parent);
+                    
+                    //Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                    //GameObject go = Instantiate(straight, pos, Quaternion.identity);
+                    //go.transform.Rotate(0, 90, 0);
+                    //go.transform.SetParent(parent);
 
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 1, 0, 1 })) //crossroad
