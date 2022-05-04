@@ -89,11 +89,15 @@ public class ZombieAI : MonoBehaviour {
             {
                 return;
             }
-        if (health <= 0)
+        if (fpsc == null)
         {
-            StartCoroutine(Die());
             return;
         }
+        //if (health <= 0)
+        //{
+        //    StartCoroutine(Die());
+        //    return;
+        //}
         if (isAware)
         {
             agent.SetDestination(fpsc.transform.position);
@@ -234,13 +238,45 @@ public class ZombieAI : MonoBehaviour {
         {
             rb.isKinematic = false;
         }
+
+        //photonView.RPC("Die_Rpc", RpcTarget.All, ragdollRigidbodies);
+        //Die_Rpc(hitPoint);
         yield return new WaitForSeconds(5f);
         PhotonNetwork.Destroy(agent.gameObject);
-        
+          
+    }
 
+    public void OnHit (Vector3 hit)
+    {
+        photonView.RPC("OnHitRPC", RpcTarget.All, hit);
+
+    }
+
+    [PunRPC]
+    void OnHitRPC (Vector3 direction ,PhotonMessageInfo info) 
+    {
+        StartCoroutine(SetRagdoll(true));
         
     }
 
+    IEnumerator SetRagdoll (bool on)
+    {
+        isDestroyed = true;
+        agent.speed = 0;
+        animator.enabled = false;
+
+        foreach (Collider col in ragdollColliders)
+        {
+            col.enabled = on;
+        }
+        foreach (Rigidbody rb in ragdollRigidbodies)
+        {
+            rb.isKinematic = false;
+        }
+
+        yield return new WaitForSeconds(5f);
+        PhotonNetwork.Destroy(agent.gameObject);
+    }
     public void Wander()
     {
         //if (wanderType == WanderType.Random)

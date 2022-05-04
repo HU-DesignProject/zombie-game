@@ -89,6 +89,11 @@ public class AtesSistemi : MonoBehaviour
                 {
                     hit.collider.gameObject.GetComponent<ZombieAI>().GetDamage(Random.Range(25, 50));
                     Debug.Log("vurdum");
+
+                    if (hit.collider.gameObject.GetComponent<ZombieAI>().health <= 0)
+                    {
+                        hit.collider.gameObject.GetComponent<ZombieAI>().OnHit(hit.point);
+                    }
                 }
                // Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             }
