@@ -8,7 +8,9 @@ public class ZombieAI : MonoBehaviour {
 
     public enum WanderType { Random, Waypoint};
     private GameObject fpsc;
-    public GameObject[] playerList;
+    //public GameObject[] playerList;
+    List<GameObject> playerList = new List<GameObject>();
+
 
     public WanderType wanderType = WanderType.Random;
     public int health = 100;
@@ -51,7 +53,12 @@ public class ZombieAI : MonoBehaviour {
         Debug.Log("zombie start");
         agent = GetComponent<NavMeshAgent>();
         
-        playerList = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] pList;
+        pList = GameObject.FindGameObjectsWithTag("Player");
+
+        for (int i=0; i < pList.Length; i++){
+            playerList.Add(pList[i]);
+        }
         Debug.Log("playerList  ", playerList[0]);
         fpsc = playerList[0];
 
@@ -79,8 +86,6 @@ public class ZombieAI : MonoBehaviour {
         }
         }
         
-
-        
         
     }
     public void Update()
@@ -91,6 +96,10 @@ public class ZombieAI : MonoBehaviour {
             }
         if (fpsc == null)
         {
+            isAttacking = false;
+            isAware = false;
+            animator.SetBool("Attack", false);
+            animator.SetBool("Aware", false);
             return;
         }
         //if (health <= 0)
@@ -98,6 +107,10 @@ public class ZombieAI : MonoBehaviour {
         //    StartCoroutine(Die());
         //    return;
         //}
+
+        //Attack();
+
+        
         if (isAware)
         {
             agent.SetDestination(fpsc.transform.position);
@@ -113,7 +126,7 @@ public class ZombieAI : MonoBehaviour {
 
             if(Vector3.Distance(agent.transform.position, fpsc.transform.position) < 2f)
             {
-                if (isAttacking == false)
+                if (isAttacking == false && fpsc != null)
                 {
                     animator.SetBool("Attack", true);
                     StartCoroutine(DoDamage());
@@ -136,19 +149,26 @@ public class ZombieAI : MonoBehaviour {
 
     public void SearchForPlayer()
     {
-        for (int i = 0; i < playerList.Length; i++) {
-
+        for (int i = 0; i < playerList.Count; i++) {
+            if (playerList[0] == null) 
+            {
+                playerList.RemoveAt(i);
+            }
+            
             if (Vector3.Angle(Vector3.forward, transform.InverseTransformPoint(playerList[i].transform.position)) < fov / 2f)
-        {
-            if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistanceIfInAngle)
             {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
+                if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistanceIfInAngle)
                 {
-                    if (hit.transform.CompareTag("Player"))
+                    RaycastHit hit;
+                    if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
                     {
-                        fpsc = playerList[i];
-                        OnAware();
+                        if (hit.transform.CompareTag("Player"))
+                        {
+                            fpsc = playerList[i];
+                            OnAware();
+                        } else {
+                            isDetecting = false;
+                        }
                     } else {
                         isDetecting = false;
                     }
@@ -156,32 +176,30 @@ public class ZombieAI : MonoBehaviour {
                     isDetecting = false;
                 }
             } else {
-                isDetecting = false;
-            }
-        } else {
-            if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistance / 2f)
-            {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
+                if (Vector3.Distance(playerList[i].transform.position, transform.position) < viewDistance / 2f)
                 {
-                    if (hit.transform.CompareTag("Player"))
+                    RaycastHit hit;
+                    if (Physics.Linecast(transform.position, playerList[i].transform.position, out hit, -1))
                     {
-                        fpsc = playerList[i];
-                        OnAware();
+                        if (hit.transform.CompareTag("Player"))
+                        {
+                            fpsc = playerList[i];
+                            OnAware();
+                        } else {
+                            isDetecting = false;
+                        }
                     } else {
                         isDetecting = false;
                     }
                 } else {
                     isDetecting = false;
                 }
-            } else {
-                isDetecting = false;
             }
-        }
 
         }
         
     }
+
 
     public void OnCollisionEnter(Collision collision)
         {
@@ -241,7 +259,7 @@ public class ZombieAI : MonoBehaviour {
 
         //photonView.RPC("Die_Rpc", RpcTarget.All, ragdollRigidbodies);
         //Die_Rpc(hitPoint);
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(1f);
         PhotonNetwork.Destroy(agent.gameObject);
           
     }

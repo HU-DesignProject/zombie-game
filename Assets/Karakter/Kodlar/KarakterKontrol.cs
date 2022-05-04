@@ -342,7 +342,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         anim.SetBool("yasiyorMu", hayattaMi);
         yield return new WaitForSeconds(5f);
         PhotonNetwork.Destroy(LocalPlayerInstance);
-        GetComponent<GameManager>().QuitApplication();
+        //GetComponent<GameManager>().QuitApplication();
         
     }
 }   
