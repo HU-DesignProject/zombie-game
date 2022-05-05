@@ -31,6 +31,9 @@ public class DockMaze : MonoBehaviour
     public GameObject corner;
     public GameObject tIntersection;
     public GameObject endpiece;
+    public GameObject bridge;
+    public bool isBridge = false;
+
     public int initialX = 0;
     public int initialY = 0;
     public int initialZ = 0;
@@ -45,6 +48,17 @@ public class DockMaze : MonoBehaviour
     {
         InitialiseMap();
         Generate();
+
+        bool temp = true;
+        while(map[1,7] == 1 || !Search2D(1, 7, new int[] {5, 0, 5, 1, 0, 1, 5, 0, 5 })) {  //vertical straight
+            //Debug.Log(map[3, 4]);
+            //Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
+
+               //Debug.Log("bi da");
+            InitialiseMap();
+            Generate();
+        }
+
         DrawMap();
         //PlaceFPS();
     }
@@ -149,9 +163,21 @@ public class DockMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 0, 5 })) //vertical straight
                 {
-                    GameObject block = Instantiate(straight);
+                    if (isBridge == false && x == 1 && z == 7)
+                    {
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.Rotate(0, 90, 0);
+                        Debug.Log("x  " + x + "  z  " + z);
+                        isBridge = true;
+                    }
+                    else
+                    {
+                        GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.SetParent(parent);
+                    }
+                    
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) //horizontal straight
                 {

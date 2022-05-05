@@ -111,7 +111,7 @@ public class ZombieAI : MonoBehaviour {
         //Attack();
 
         
-        if (isAware)
+        if (isAware && health > 0)
         {
             agent.SetDestination(fpsc.transform.position);
             animator.SetBool("Aware", true);
