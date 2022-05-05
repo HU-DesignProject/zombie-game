@@ -10,6 +10,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using Photon.Pun.UtilityScripts;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviourPunCallbacks
     {
@@ -28,6 +29,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         [SerializeField]
         private GameObject playerPrefab;
         public GameObject zombiePrefab;
+
+        public GameObject maze;
+	    public byte[,] map;
+        public List<Vector3> positionList;
 
         #endregion
 
@@ -54,7 +59,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         
         void Start() 
         {
-
+            positionList = GetMazeMap();
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
 			{
@@ -81,7 +86,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 				    Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-					PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
+					Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+
+                    //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
                     StartGame();
                  }else{
 
@@ -92,6 +100,30 @@ public class GameManager : MonoBehaviourPunCallbacks
 			}
 
             topPanel.SetActive(false);
+        }
+
+        private List<Vector3> GetMazeMap() 
+        {
+            map = maze.GetComponent<DockRecursive>().SendMap();
+		    int depth = maze.GetComponent<DockRecursive>().depth;
+		    int width = maze.GetComponent<DockRecursive>().width;
+		    int initialX = maze.GetComponent<DockRecursive>().initialX;
+		    int initialY = maze.GetComponent<DockRecursive>().initialY;
+		    //int initialY = 9;
+		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
+		    int scale = maze.GetComponent<DockRecursive>().scale;
+
+            for (int z = 0; z < depth; z++){
+                for (int x = 0; x < width; x++)
+                {
+                    if (map[x, z] != 1)
+                    {
+			    		positionList.Add(new Vector3(initialX + scale * x, initialY + 10, initialZ + scale * z));
+			    		//StartCoroutine(SpawnZombie(x, z));
+			    	}
+			    }
+		    }
+		    return positionList;
         }
 
         public override void OnDisable()
