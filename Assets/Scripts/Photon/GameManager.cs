@@ -108,8 +108,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 		    int depth = maze.GetComponent<DockRecursive>().depth;
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
-		    int initialY = maze.GetComponent<DockRecursive>().initialY;
-		    //int initialY = 9;
+		    //int initialY = maze.GetComponent<DockRecursive>().initialY;
+		    int initialY = 6;
 		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
 		    int scale = maze.GetComponent<DockRecursive>().scale;
 
@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (map[x, z] != 1)
                     {
-			    		positionList.Add(new Vector3(initialX + scale * x, initialY + 10, initialZ + scale * z));
+			    		positionList.Add(new Vector3(initialX + scale * x, initialY , initialZ + scale * z));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -163,7 +163,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 yield return new WaitForSeconds(UnityEngine.Random.Range(ZombieGame.ASTEROIDS_MIN_SPAWN_TIME, ZombieGame.ASTEROIDS_MAX_SPAWN_TIME));
 
-                Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
+                //Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
+				Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
 
 
                 PhotonNetwork.InstantiateRoomObject(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
