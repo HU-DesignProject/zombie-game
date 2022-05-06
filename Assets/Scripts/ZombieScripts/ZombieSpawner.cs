@@ -34,7 +34,7 @@ public class ZombieSpawner : MonoBehaviour {
 		int width = maze.GetComponent<DockRecursive>().width;
 		int initialX = maze.GetComponent<DockRecursive>().initialX;
 		//int initialY = maze.GetComponent<DockRecursive>().initialY;
-		int initialY = 9;
+		int initialY = 15;
 		int initialZ = maze.GetComponent<DockRecursive>().initialZ;
 		int scale = maze.GetComponent<DockRecursive>().scale;
 

@@ -300,14 +300,19 @@ public class ZombieAI : MonoBehaviour {
     {
         //if (wanderType == WanderType.Random)
         //{
+            
             if (Vector3.Distance(transform.position, wanderPoint) < 2f)
             {
                 wanderPoint = RandomWanderPoint();
-            }
+            } 
             else
             {
                 agent.SetDestination(wanderPoint);
+                Debug.Log(wanderPoint);
             }
+        
+        Vector3 curentV = transform.position;
+
         //}
         /*else
         {
@@ -338,7 +343,11 @@ public class ZombieAI : MonoBehaviour {
 
     IEnumerator WanderWaypoint()
     {
-        int direction = Random.Range(0,4);
+
+        wanderPoint = RandomWanderPoint();
+        agent.SetDestination(wanderPoint);
+
+        /*int direction = Random.Range(0,4);
         Debug.Log("direction  " + direction);
         if (direction == 0)
         {
@@ -356,9 +365,9 @@ public class ZombieAI : MonoBehaviour {
         {
             Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z + 20);
             agent.SetDestination(wanderPoint);
-        }
+        }*/
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(15f);
     }
 
      public void GetDamage(int damage) 
