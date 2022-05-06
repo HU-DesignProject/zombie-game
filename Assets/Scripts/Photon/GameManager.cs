@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
 		    //int initialY = maze.GetComponent<DockRecursive>().initialY;
-		    int initialY = 6;
+		    int initialY =10;
 		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
 		    int scale = maze.GetComponent<DockRecursive>().scale;
 

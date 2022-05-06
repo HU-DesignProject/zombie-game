@@ -339,22 +339,22 @@ public class ZombieAI : MonoBehaviour {
     IEnumerator WanderWaypoint()
     {
         int direction = Random.Range(0,4);
-
+        Debug.Log("direction  " + direction);
         if (direction == 0)
         {
-            Vector3 newWaypoint = new Vector3(agent.transform.position.x - 5, agent.transform.position.y, agent.transform.position.z);
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x - 20, agent.transform.position.y, agent.transform.position.z);
             agent.SetDestination(wanderPoint);
         } else if (direction == 1)
         {
-            Vector3 newWaypoint = new Vector3(agent.transform.position.x + 5, agent.transform.position.y, agent.transform.position.z);
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x + 20, agent.transform.position.y, agent.transform.position.z);
             agent.SetDestination(wanderPoint);
         } else if (direction == 2)
         {
-            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z - 5);
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z - 20);
             agent.SetDestination(wanderPoint);
         } else if (direction == 3)
         {
-            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z + 5);
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z + 20);
             agent.SetDestination(wanderPoint);
         }
 

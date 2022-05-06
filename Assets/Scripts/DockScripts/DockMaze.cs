@@ -6,7 +6,6 @@ public class DockMapLocation
 {
     public int x;
     public int z;
-
     public DockMapLocation(int _x, int _z)
     {
         x = _x;
@@ -39,6 +38,7 @@ public class DockMaze : MonoBehaviour
     public int initialZ = 0;
 
     public Transform parent;
+    private List<GameObject> navMeshElements = new List<GameObject>();
 
 
     //public GameObject FPC;
@@ -300,4 +300,6 @@ public class DockMaze : MonoBehaviour
     {
         return CountSquareNeighbours(x, z) + CountDiagonalNeighbours(x, z);
     }
+
+  
 }
