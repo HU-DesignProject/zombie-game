@@ -138,7 +138,8 @@ public class ZombieAI : MonoBehaviour {
             //renderer.material.color = Color.red;
         } else
         {
-            Wander();
+            //Wander();
+            StartCoroutine(WanderWaypoint());
             animator.SetBool("Aware", false);
             animator.SetBool("Attack", false);
             agent.speed = wanderSpeed;
@@ -333,6 +334,31 @@ public class ZombieAI : MonoBehaviour {
                 Debug.LogWarning("Please assign more than 1 waypoint to the AI: " + gameObject.name);
             }
         }*/
+    }
+
+    IEnumerator WanderWaypoint()
+    {
+        int direction = Random.Range(0,4);
+
+        if (direction == 0)
+        {
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x - 5, agent.transform.position.y, agent.transform.position.z);
+            agent.SetDestination(wanderPoint);
+        } else if (direction == 1)
+        {
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x + 5, agent.transform.position.y, agent.transform.position.z);
+            agent.SetDestination(wanderPoint);
+        } else if (direction == 2)
+        {
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z - 5);
+            agent.SetDestination(wanderPoint);
+        } else if (direction == 3)
+        {
+            Vector3 newWaypoint = new Vector3(agent.transform.position.x , agent.transform.position.y, agent.transform.position.z + 5);
+            agent.SetDestination(wanderPoint);
+        }
+
+        yield return new WaitForSeconds(5f);
     }
 
      public void GetDamage(int damage) 
