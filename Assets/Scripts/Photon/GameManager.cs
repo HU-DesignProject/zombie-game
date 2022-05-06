@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 					Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
 
                     //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
-                    PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y -2, currentV.z), Quaternion.identity, 0);
                     StartGame();
                  }else{
 
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
 		    //int initialY = maze.GetComponent<DockRecursive>().initialY;
-		    int initialY =10;
+		    int initialY = 10;
 		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
 		    int scale = maze.GetComponent<DockRecursive>().scale;
 
