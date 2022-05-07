@@ -28,11 +28,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         [Tooltip("The prefab to use for representing the player")]
         [SerializeField]
         private GameObject playerPrefab;
-        public GameObject zombiePrefab;
+        public GameObject yakuZombiePrefab;
+        public GameObject warZombiePrefab;
+        public GameObject copZombiePrefab;
 
         public GameObject maze;
 	    public byte[,] map;
         public List<Vector3> positionList;
+        public List<String> zombieList;
 
         #endregion
 
@@ -60,6 +63,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         void Start() 
         {
             positionList = GetMazeMap();
+
+            zombieList = new List<String>();
+            zombieList.Add(this.yakuZombiePrefab.name);
+            zombieList.Add(this.warZombiePrefab.name);
+            zombieList.Add(this.copZombiePrefab.name);
+
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
 			{
@@ -167,8 +176,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 //Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
 				Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
 
-
-                PhotonNetwork.InstantiateRoomObject(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
+                String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
+                PhotonNetwork.InstantiateRoomObject(zombieDesicion, currentV, Quaternion.identity, 0);
             }
         }
 
@@ -248,7 +257,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
 
 
-            PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
+            //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
             
 
 
