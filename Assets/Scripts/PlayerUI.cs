@@ -110,7 +110,7 @@ using Photon.Pun;
 				targetPosition = targetTransform.position;
 				targetPosition.y += characterControllerHeight;
 				
-				this.transform.position = Camera.main.WorldToScreenPoint (targetPosition) + screenOffset;
+				//this.transform.position = Camera.main.WorldToScreenPoint (targetPosition) + screenOffset;
 			}
 
 		}
