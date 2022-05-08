@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 					Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
 
                     //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
-                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y -2, currentV.z), Quaternion.identity, 0);
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
                     StartGame();
                  }else{
 
@@ -114,14 +114,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private List<Vector3> GetMazeMap() 
         {
-            map = maze.GetComponent<DockRecursive>().SendMap();
-		    int depth = maze.GetComponent<DockRecursive>().depth;
-		    int width = maze.GetComponent<DockRecursive>().width;
-		    int initialX = maze.GetComponent<DockRecursive>().initialX;
-		    //int initialY = maze.GetComponent<DockRecursive>().initialY;
-		    int initialY = 10;
-		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
-		    int scale = maze.GetComponent<DockRecursive>().scale;
+
+            map = maze.GetComponent<TunnelRecursive>().SendMap();
+		    int depth = maze.GetComponent<TunnelRecursive>().depth;
+		    int width = maze.GetComponent<TunnelRecursive>().width;
+		    int initialX = maze.GetComponent<TunnelRecursive>().initialX;
+		    //int initialY = maze.GetComponent<TunnelRecursive>().initialY;
+		    int initialY = 3;
+		    int initialZ = maze.GetComponent<TunnelRecursive>().initialZ;
+		    int scale = maze.GetComponent<TunnelRecursive>().scale;
 
             for (int z = 0; z < depth; z++){
                 for (int x = 0; x < width; x++)
@@ -189,7 +190,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
             }
             Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
-            PhotonNetwork.LoadLevel("Dock Thing");
+            PhotonNetwork.LoadLevel("Tunnel");
         }
 
 
