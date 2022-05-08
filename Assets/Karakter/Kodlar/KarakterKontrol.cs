@@ -199,6 +199,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
             }
             
         }
+    
     }
     public float GetPlayerHealth()
     {
@@ -208,13 +209,14 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     {
         return hayattaMi;
     }
-    public void HasarAl()
+    public IEnumerator HasarAl()
     {
         srcSound.PlayOneShot(painSound);
         anim.SetBool("Damage",true);
         float damage=Random.Range(5, 10);
         playerHealth -= damage;
         healthBar.TakeDamage(damage);
+        yield return new WaitForSeconds(5f);
         anim.SetBool("Damage",false);
     }
     void Hareket()

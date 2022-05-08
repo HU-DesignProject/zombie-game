@@ -50,6 +50,7 @@ public class PlayerHealth : MonoBehaviour
         if(isTakingDamage){
             damageImage.enabled=true;
             damageImage.color=damageColor;
+            Debug.Log("AAAAA");
 
         }
         else{
