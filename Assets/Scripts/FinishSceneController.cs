@@ -22,7 +22,7 @@ public class FinishSceneController : MonoBehaviour {
     public void PassToIndustryScene()
     {
         Debug.Log("industry--");
-        SceneManager.LoadScene("industry");  
+        SceneManager.LoadScene("Tunnel");  
     }
 
 }

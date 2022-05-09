@@ -41,6 +41,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     [Tooltip("The current Health of our player")]
     public float playerHealth = 100f;
     public float bulletCount;
+    public int zombieKillCount = 0;
 
     [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;

@@ -151,7 +151,7 @@ public class ZombieAI : MonoBehaviour {
     public void SearchForPlayer()
     {
         for (int i = 0; i < playerList.Count; i++) {
-            if (playerList[0] == null) 
+            if (playerList[i] == null) 
             {
                 playerList.RemoveAt(i);
             }

@@ -85,7 +85,7 @@ public class AtesSistemi : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(hpKontrol.transform.position, hpKontrol.transform.forward , out hit, range))
             {
-                if (hit.collider.gameObject.CompareTag("Zombi"))
+                if (hit.collider.gameObject.CompareTag("Zombi") && hit.collider.gameObject.GetComponent<ZombieAI>().health > 0)
                 {
                     hit.collider.gameObject.GetComponent<ZombieAI>().GetDamage(Random.Range(25, 50));
                     Debug.Log("vurdum");
@@ -93,6 +93,8 @@ public class AtesSistemi : MonoBehaviour
                     if (hit.collider.gameObject.GetComponent<ZombieAI>().health <= 0)
                     {
                         hit.collider.gameObject.GetComponent<ZombieAI>().OnHit(hit.point);
+                        hpKontrol.zombieKillCount += 1;
+                        Debug.Log("Kill: " + hpKontrol.zombieKillCount);
                     }
                 }
                // Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));

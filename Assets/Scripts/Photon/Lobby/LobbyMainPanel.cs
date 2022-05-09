@@ -275,7 +275,7 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
 
-            PhotonNetwork.LoadLevel("Tunnel");
+            PhotonNetwork.LoadLevel("Dock Thing");
         }
 
         #endregion

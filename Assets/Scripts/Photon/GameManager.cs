@@ -11,6 +11,7 @@ using Photon.Realtime;
 using Photon.Pun.UtilityScripts;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GameManager : MonoBehaviourPunCallbacks
     {
@@ -36,7 +37,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 	    public byte[,] map;
         public List<Vector3> positionList;
         public List<String> zombieList;
-
+        private List<GameObject> playerList = new List<GameObject>();
+        private List<bool> isPlayerFinishList = new List<bool>();
+        private int playersCompleteMaze = 0;
         #endregion
 
         #region Photon Callbacks
@@ -59,7 +62,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             CountdownTimer.OnCountdownTimerHasExpired += OnCountdownTimerIsExpired;
 
         }
-        
         void Start() 
         {
             positionList = GetMazeMap();
@@ -68,6 +70,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
             zombieList.Add(this.copZombiePrefab.name);
+
+            GameObject[] pList;
+            pList = GameObject.FindGameObjectsWithTag("Player");
+
+            for (int i=0; i < pList.Length; i++){
+                playerList.Add(pList[i]);
+                isPlayerFinishList.Add(false);
+            }
 
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
@@ -105,8 +115,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 					Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
 				}
-
-
 			}
 
             topPanel.SetActive(false);
@@ -115,14 +123,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         private List<Vector3> GetMazeMap() 
         {
 
-            map = maze.GetComponent<TunnelRecursive>().SendMap();
-		    int depth = maze.GetComponent<TunnelRecursive>().depth;
-		    int width = maze.GetComponent<TunnelRecursive>().width;
-		    int initialX = maze.GetComponent<TunnelRecursive>().initialX;
+            map = maze.GetComponent<DockRecursive>().SendMap();
+		    int depth = maze.GetComponent<DockRecursive>().depth;
+		    int width = maze.GetComponent<DockRecursive>().width;
+		    int initialX = maze.GetComponent<DockRecursive>().initialX;
 		    //int initialY = maze.GetComponent<TunnelRecursive>().initialY;
-		    int initialY = 3;
-		    int initialZ = maze.GetComponent<TunnelRecursive>().initialZ;
-		    int scale = maze.GetComponent<TunnelRecursive>().scale;
+		    int initialY = 8;
+		    int initialZ = maze.GetComponent<DockRecursive>().initialZ;
+		    int scale = maze.GetComponent<DockRecursive>().scale;
 
             for (int z = 0; z < depth; z++){
                 for (int x = 0; x < width; x++)
@@ -153,8 +161,47 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Screen.lockCursor = false;
                 Time.timeScale = 1; 
             }
+            
+
+            CheckFinishedPlayers();
+
+            if (isPlayerFinishList.Distinct().Count() == 1)
+            {
+                FinishScene();
+            }
+            
         }
         
+        public void CheckFinishedPlayers() {
+
+            for (int i = 0; i < playerList.Count; i++) {
+                if (playerList[i] == null) 
+                {
+                    playerList.RemoveAt(i);
+                }
+
+                if (playerList[i].transform.position.x <= 30 && ((byte)playerList[i].transform.position.x) >= 20 &&
+                playerList[i].transform.position.z <= 55 && playerList[i].transform.position.z >= 45) 
+                {
+                    Debug.Log("finitoya girdi");
+                    isPlayerFinishList[i] = true;
+                }
+                else 
+                {
+                    isPlayerFinishList[i] = false;
+                }
+            }
+        }
+
+        public void FinishScene() {
+            Debug.Log("playersCompleteMaze:  " + playerList.Count);
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
+            }
+            Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
+            PhotonNetwork.LoadLevel("FinishScene");
+        }
 
         public void continuePressed() 
         {
@@ -190,7 +237,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
             }
             Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
-            PhotonNetwork.LoadLevel("Tunnel");
+            PhotonNetwork.LoadLevel("Dock Thing");
         }
 
 
