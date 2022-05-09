@@ -106,6 +106,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
             if (photonView.IsMine)
             {
                 _kameraKontrol.OnStartFollowing();
+        
             }
         }
         else

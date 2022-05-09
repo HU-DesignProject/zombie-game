@@ -45,6 +45,18 @@ using UnityEngine;
 		
 		// Cache for camera offset
 		Vector3 cameraOffset = Vector3.zero;
+
+		public Transform hedef;
+
+		public Vector3 hedefMesafe;
+		[SerializeField]
+		private float fareHassasiyeti;
+		float fareX, fareY;
+
+		Vector3 objRot;
+		public Transform karakterVucut;
+
+		KarakterKontrol karakterHp;
 		
 		
         #endregion
@@ -56,6 +68,9 @@ using UnityEngine;
         /// </summary>
         void Start()
 		{
+			
+			karakterHp = GameObject.Find("SWAT").GetComponent<KarakterKontrol>();
+			hedef=karakterHp.target;
 			// Start following the target if wanted.
 			if (followOnStart)
 			{
@@ -77,6 +92,29 @@ using UnityEngine;
 			if (isFollowing) {
 				Follow ();
 			}
+
+			this.transform.position = Vector3.Lerp(this.transform.position, hedef.position + hedefMesafe, Time.deltaTime * 10);
+            fareX += Input.GetAxis("Mouse X") * fareHassasiyeti;
+            fareY += Input.GetAxis("Mouse Y") * fareHassasiyeti;
+            if (fareY >= 25)
+            {
+                fareY = 25;
+            }
+            if (fareY <= -40)
+            {
+                fareY = -40;
+            }
+            this.transform.eulerAngles = new Vector3(fareY, fareX, 0);
+            hedef.transform.eulerAngles = new Vector3(0, fareX, 0);
+
+            Vector3 gecici = this.transform.eulerAngles;
+            gecici = this.transform.eulerAngles;
+            gecici.z = 0;
+            gecici.y = this.transform.localEulerAngles.y;
+            gecici.x = this.transform.localEulerAngles.x + 10;
+            objRot = gecici;
+            karakterVucut.transform.eulerAngles = objRot;
+
 		}
 
 		#endregion
