@@ -384,9 +384,9 @@ public class ZombieAI : MonoBehaviour {
     {
         isAttacking = true;
         Debug.Log("hasar aldi");
-        fpsc.GetComponent<KarakterKontrol>().HasarAl();
+        StartCoroutine( fpsc.GetComponent<KarakterKontrol>().HasarAl());
         yield return new WaitForSeconds(5f);
-        Debug.Log("1f gecti");
+        Debug.Log("1f gecti " + fpsc.GetComponent<KarakterKontrol>().GetPlayerHealth().ToString());
         isAttacking = false;
     }
 

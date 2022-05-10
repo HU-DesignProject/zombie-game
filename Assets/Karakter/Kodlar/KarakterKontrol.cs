@@ -87,7 +87,6 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
 
     void Start()
     {
-        KameraKontrol _kameraKontrol = gameObject.GetComponent<KameraKontrol>();
         audioSource = GetComponent<AudioSource>();
         sphereCollider = GetComponent<SphereCollider>();
         photonView = GetComponent<PhotonView>();
@@ -100,19 +99,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         healthBar=GetComponent<PlayerHealth>();
         srcSound=this.gameObject.GetComponent<AudioSource>();
 
-
-        if (_kameraKontrol != null)
-        {
-            if (photonView.IsMine)
-            {
-                _kameraKontrol.OnStartFollowing();
-            }
-        }
-        else
-        {
-            Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
-        }
-
+    
         // Create the UI
         if (this.playerUiPrefab != null)
         {
@@ -199,6 +186,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
             }
             
         }
+    
     }
     public float GetPlayerHealth()
     {
@@ -208,13 +196,14 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     {
         return hayattaMi;
     }
-    public void HasarAl()
+    public IEnumerator HasarAl()
     {
         srcSound.PlayOneShot(painSound);
         anim.SetBool("Damage",true);
         float damage=Random.Range(5, 10);
         playerHealth -= damage;
         healthBar.TakeDamage(damage);
+        yield return new WaitForSeconds(5f);
         anim.SetBool("Damage",false);
     }
     void Hareket()

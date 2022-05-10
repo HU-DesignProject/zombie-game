@@ -75,7 +75,7 @@ public class Zombi : MonoBehaviour
     }
     public void HasarVer()
     {
-        hedefOyuncu.GetComponent<KarakterKontrol>().HasarAl();
+        StartCoroutine(hedefOyuncu.GetComponent<KarakterKontrol>().HasarAl());
     }
     IEnumerator YokOl()
     {
