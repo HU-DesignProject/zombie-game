@@ -70,7 +70,7 @@ using UnityEngine;
 		{
 			
 			karakterHp = GameObject.Find("SWAT").GetComponent<KarakterKontrol>();
-			hedef=karakterHp.target;
+			hedef=karakterHp.transform;
 			// Start following the target if wanted.
 			if (followOnStart)
 			{

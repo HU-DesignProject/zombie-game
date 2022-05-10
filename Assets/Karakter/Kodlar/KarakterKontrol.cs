@@ -87,7 +87,6 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
 
     void Start()
     {
-        KameraKontrol _kameraKontrol = gameObject.GetComponent<KameraKontrol>();
         audioSource = GetComponent<AudioSource>();
         sphereCollider = GetComponent<SphereCollider>();
         photonView = GetComponent<PhotonView>();
@@ -100,20 +99,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         healthBar=GetComponent<PlayerHealth>();
         srcSound=this.gameObject.GetComponent<AudioSource>();
 
-
-        if (_kameraKontrol != null)
-        {
-            if (photonView.IsMine)
-            {
-                _kameraKontrol.OnStartFollowing();
-        
-            }
-        }
-        else
-        {
-            Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
-        }
-
+    
         // Create the UI
         if (this.playerUiPrefab != null)
         {
