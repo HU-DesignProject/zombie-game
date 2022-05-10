@@ -4,8 +4,6 @@ using System.Collections;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
 using Photon.Pun;
 using Photon.Realtime;
 using Photon.Pun.UtilityScripts;
@@ -64,7 +62,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         void Start() 
         {
-            positionList = GetMazeMap();
+            Debug.Log(SceneManager.GetActiveScene().name);
 
             zombieList = new List<String>();
             zombieList.Add(this.yakuZombiePrefab.name);
@@ -82,8 +80,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
 			{
-				SceneManager.LoadScene("Loading");
-
+				SceneManager.LoadScene("Launcher");
 				return;
 			}
 
@@ -93,30 +90,38 @@ public class GameManager : MonoBehaviourPunCallbacks
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
+            if (SceneManager.GetActiveScene().name == "Dock Thing") 
+            {
+                positionList = GetMazeMap();
 
-            if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
+                if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
-				Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
-			} else {
+                    Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+                } else {
 
 
-				if (KarakterKontrol.LocalPlayerInstance==null)
-				{
-				    Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    if (KarakterKontrol.LocalPlayerInstance==null)
+                    {
+                        Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
-					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                    
-					Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+                        // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                        
+                        Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
 
-                    //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
-                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
-                    StartGame();
-                 }else{
+                        //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
+                        PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
+                        StartDockScene();
+                    }else{
 
-					Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
-				}
-			}
-
+                        Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+                    }
+                }
+            }
+            else if (SceneManager.GetActiveScene().name == "Tunnel")
+            {
+                Debug.Log("tunnele girdi");
+            } 
+            
             topPanel.SetActive(false);
         }
 
@@ -295,7 +300,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        private void StartGame()
+        private void StartDockScene()
         {
             Debug.Log("StartGame!");
 
@@ -306,9 +311,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
             //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
-            
+            if (PhotonNetwork.IsMasterClient)
+            {
+                StartCoroutine(SpawnZombie());
+            }
+        }
+
+        private void StartTunnelScene()
+        {
+            Debug.Log("StartGame!");
+
+            // on rejoin, we have to figure out if the spaceship exists or not
+            // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
+
+            Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
 
 
+            //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
             if (PhotonNetwork.IsMasterClient)
             {
                 StartCoroutine(SpawnZombie());
@@ -374,7 +393,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private void OnCountdownTimerIsExpired()
         {
-            StartGame();
+            if (SceneManager.GetActiveScene().name == "Dock Thing")
+            {
+                StartDockScene();
+            } 
+            else if (SceneManager.GetActiveScene().name == "Tunnel")
+            {
+                StartTunnelScene();
+            } 
         }
         
         #region Public Methods

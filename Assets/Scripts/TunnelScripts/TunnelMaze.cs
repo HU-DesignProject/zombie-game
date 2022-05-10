@@ -38,6 +38,11 @@ public class TunnelMaze : MonoBehaviour
     public int initialX = 0;
     public int initialY = 0;
     public int initialZ = 0;
+    public int tunnelFloor = 2;
+    private int bridgeX;
+    private int bridgeZ;
+    private int[] bridgeArray;
+
     
     public Transform parent;
     private List<GameObject> navMeshElements = new List<GameObject>();
@@ -50,31 +55,49 @@ public class TunnelMaze : MonoBehaviour
     {
         InitialiseMap();
         Generate();
+        
+        CreateBridge();
 
-        /*for (int z = 0; z < depth - 1; z++)
-        {
-            for (int x = 0; x < width - 1; x++)
-            { 
-                if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 1, 0, 1 })) 
-                {
-                    InitialiseMap();
-                    Generate();
-                }
-            }
-        }*/
-        bool temp = true;
-
-        while(map[8,6] == 1 || !Search2D(8, 6,  new int[] { 1, 0, 5, 5, 0, 1, 5, 1, 5 })) {  //vertical straight
-            //Debug.Log(map[3, 4]);
-            //Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
-
-            Debug.Log("bi da");
+        while(map[bridgeX,bridgeZ] == 1 || !Search2D(bridgeX, bridgeZ,  bridgeArray)) {  
             InitialiseMap();
             Generate();
         }
         
         DrawMap();
         //PlaceFPS();
+    }
+
+    public void CreateBridge() {
+        if (tunnelFloor == 1) 
+        {
+            bridgeX = 8;
+            bridgeZ = 8;
+            bridgeArray = new int [] {5, 1, 5, 0, 0, 1, 1, 0, 5  };
+        }
+        if (tunnelFloor == 2) 
+        {
+            bridgeX = 8;
+            bridgeZ = 6;
+            bridgeArray = new int [] {1, 0, 5, 5, 0, 1, 5, 1, 5};
+        } 
+        if (tunnelFloor == 3) 
+        {
+            bridgeX = 8;
+            bridgeZ = 1;
+            bridgeArray = new int [] {1, 0, 5, 5, 0, 1, 5, 1, 5};
+        }
+        if (tunnelFloor == 4) 
+        {
+            bridgeX = 1;
+            bridgeZ = 6;
+            bridgeArray = new int [] {5, 1, 5, 1, 0, 0, 5, 0, 1};
+        }
+        if (tunnelFloor == 5) 
+        {
+            bridgeX = 1;
+            bridgeZ = 6;
+            bridgeArray = new int [] {5, 1, 5, 1, 0, 0, 5, 0, 1};
+        }
     }
 
     void InitialiseMap()
@@ -152,7 +175,6 @@ public class TunnelMaze : MonoBehaviour
                 {
                     if (x + 1 <= width && z + 1 <= depth && z - 1 <= depth ) 
                     {
-                        Debug.Log("horizontal end piece -|  " + "x " + x + " z "  + z);
                         if (map[x + 1, z - 1] == 1 && map[x + 1, z + 1] == 1)  
                         {
                             GameObject _block = Instantiate(endpieceWithRoom);
@@ -166,7 +188,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 1, 5 })) //horizontal end piece |-
                 {
-                    Debug.Log("horizontal end piece |-  " + "x " + x + " z "  + z);
                     if (x - 1 <= width && z + 1 <= depth && z - 1 <= depth ) 
                     {
                         if (map[x - 1, z - 1] == 1 && map[x - 1, z + 1] == 1)  
@@ -184,7 +205,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 1, 5, 0, 5 })) //vertical end piece T
                 {
-                    Debug.Log("vertical end piece T  " + "x " + x + " z "  + z);
                         if (x + 1 <= width && x - 1 <= width && z + 1 <= depth ) 
                         {
                             if (map[x + 1, z + 1] == 1 && map[x - 1, z + 1] == 1)  
@@ -215,7 +235,6 @@ public class TunnelMaze : MonoBehaviour
                             _block.transform.SetParent(parent);
                         }
                     }
-                    Debug.Log("vertical end piece upside downT  " + "x " + x + " z "  + z);
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
@@ -232,8 +251,7 @@ public class TunnelMaze : MonoBehaviour
                     //    isBridge = true;
                     //}
                     
-                    Debug.Log("vertical straight  " + "x " + x + " z "  + z);
-                        GameObject block = Instantiate(straight);
+                    GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.SetParent(parent);
                     
@@ -241,7 +259,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 })) //horizontal straight
                 {
-                    Debug.Log("horizontal straight " + "x " + x + " z "  + z);
                     GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
@@ -261,38 +278,67 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 1, 0, 5 })) //upper left corner
                 {
-                    Debug.Log("upper left corner  " + "x " + x + " z "  + z);
-                    GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.Rotate(0, 180, 0);
-                    go.transform.SetParent(parent);
+                    if (tunnelFloor == 1 && isBridge == false && x == bridgeX && z == bridgeZ)
+                    {
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.Rotate(0, 270, 0);
+                        isBridge = true;
+                    }
+                     else 
+                    {
+                        GameObject go = Instantiate(corner);
+                        go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        go.transform.Rotate(0, 180, 0);
+                        go.transform.SetParent(parent);
+                    }
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 0, 1 })) //upper right corner
                 {
-                    Debug.Log("upper right corner  " + "x " + x + " z "  + z);
-                    GameObject go = Instantiate(corner);
-                    go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.Rotate(0, 90, 0);
-                    go.transform.SetParent(parent);
+                    if (tunnelFloor == 4 && isBridge == false && x == bridgeX && z == bridgeZ)
+                    {
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.Rotate(0, 180, 0);
+                        isBridge = true;
+                    } 
+                    else if (tunnelFloor == 5 && isBridge == false && x == bridgeX && z == bridgeZ)
+                    {
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.Rotate(0, 180, 0);
+                        isBridge = true;
+                    } 
+                    else {
+                        GameObject go = Instantiate(corner);
+                        go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        go.transform.Rotate(0, 90, 0);
+                        go.transform.SetParent(parent);
+                    }
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 1, 5 })) //lower right corner
                 {
-                    Debug.Log("lower right corner  " + "x " + x + " z "  + z);
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 5, 0, 1, 5, 1, 5 })) //lower left corner
                 {
-                    if (isBridge == false && x == 8 && z == 6)
+                    if (tunnelFloor == 2 && isBridge == false && x == bridgeX && z == bridgeZ)
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        Debug.Log("x  " + x + "  z  " + z);
                         isBridge = true;
-                    } else 
+                    } 
+                    else if ( tunnelFloor == 3 && isBridge == false && x == bridgeX && z == bridgeZ)
                     {
-                        Debug.Log("lower left corner  " + "x " + x + " z "  + z);
+                        Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
+                        GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.Rotate(0, -90, 0);
+                        isBridge = true;
+                    }
+                     else 
+                    {
                         GameObject go = Instantiate(corner);
                         go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         go.transform.Rotate(0, -90, 0);
@@ -301,7 +347,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 5, 1, 5 })) //tjunc  upsidedown T
                 {
-                    Debug.Log("tjunc  upsidedown T  " + "x " + x + " z "  + z);
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
@@ -309,7 +354,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 1, 0, 1 })) //tjunc  T
                 {
-                    Debug.Log("tjunc   T  " + "x " + x + " z "  + z);
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
@@ -317,7 +361,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 0, 0, 1, 1, 0, 5 })) //tjunc  -|
                 {
-                    Debug.Log("tjunc  -|  " + "x " + x + " z "  + z);
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
@@ -325,7 +368,6 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 0, 1 })) //tjunc  |-
                 {
-                    Debug.Log("tjunc  |-  " + "x " + x + " z "  + z);
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.SetParent(parent);
