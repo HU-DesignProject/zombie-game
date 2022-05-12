@@ -122,7 +122,7 @@ public class TunnelMaze : MonoBehaviour
         }
     }
 
-     public byte[,] SendMap()
+     public byte[,] GetMap()
     {
         return map;
     }
@@ -282,6 +282,7 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 270, 0);
                         isBridge = true;
                     }
@@ -299,6 +300,7 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 180, 0);
                         isBridge = true;
                     } 
@@ -306,6 +308,7 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 180, 0);
                         isBridge = true;
                     } 
@@ -328,12 +331,14 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         isBridge = true;
                     } 
                     else if ( tunnelFloor == 3 && isBridge == false && x == bridgeX && z == bridgeZ)
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, -90, 0);
                         isBridge = true;
                     }

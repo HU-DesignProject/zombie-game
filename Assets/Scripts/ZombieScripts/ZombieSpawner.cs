@@ -29,7 +29,7 @@ public class ZombieSpawner : MonoBehaviour {
 	public List<Vector3> SpawnZombieInMaze()
     {
 
-		map = maze.GetComponent<DockRecursive>().SendMap();
+		map = maze.GetComponent<DockRecursive>().GetMap();
 		int depth = maze.GetComponent<DockRecursive>().depth;
 		int width = maze.GetComponent<DockRecursive>().width;
 		int initialX = maze.GetComponent<DockRecursive>().initialX;

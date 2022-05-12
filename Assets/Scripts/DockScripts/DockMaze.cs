@@ -85,7 +85,7 @@ public class DockMaze : MonoBehaviour
         }
     }
 
-     public byte[,] SendMap()
+     public byte[,] GetMap()
     {
         return map;
     }
@@ -167,6 +167,7 @@ public class DockMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
+                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 90, 0);
                         Debug.Log("x  " + x + "  z  " + z);
                         isBridge = true;

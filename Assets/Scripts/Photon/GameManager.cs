@@ -44,6 +44,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         [SerializeField]
         private GameObject topPanel;
+        public GameObject[] mazeList;
+        private List<bool> isPlayerInMazeList = new List<bool>();
+
         /// <summary>
         /// Called when the local player left the room. We need to load the launcher scene.
         /// </summary>
@@ -75,6 +78,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             for (int i=0; i < pList.Length; i++){
                 playerList.Add(pList[i]);
                 isPlayerFinishList.Add(false);
+                isPlayerInMazeList.Add(false);
             }
 
             // in case we started this demo with the wrong scene being active, simply load the menu scene
@@ -107,10 +111,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         
                         Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-
-                        //PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(UnityEngine.Random.Range(0,5), 7, UnityEngine.Random.Range(-3, 0)), Quaternion.identity, 0);
-                        PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
-                        StartDockScene();
+                        InstantiatePlayer(currentV);
+                        StartScene();
                     }else{
 
                         Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
@@ -120,15 +122,60 @@ public class GameManager : MonoBehaviourPunCallbacks
             else if (SceneManager.GetActiveScene().name == "Tunnel")
             {
                 Debug.Log("tunnele girdi");
+                mazeList = GameObject.FindGameObjectsWithTag("Maze");
+                for (int i = 0; i < mazeList.Length; i++) 
+                {
+                    Debug.Log(mazeList[i].GetComponent<TunnelMaze>().map);
+                }
+
+                    GetMazePositions(mazeList[0].GetComponent<TunnelMaze>());
+                    Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+                        InstantiatePlayer(currentV);
+                    
+                    //InstantiatePlayer(currentV);
+
+                        StartScene();
+
+                
             } 
             
             topPanel.SetActive(false);
         }
 
+        private void InstantiatePlayer(Vector3 currentV) 
+        {
+            PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
+
+        }
+
+        private List<Vector3> GetMazePositions(TunnelMaze maze)
+        {
+            map = maze.GetMap();
+            int depth = maze.depth;
+            int width = maze.width;
+		    int initialX = maze.initialX;
+		    int initialY = maze.initialY + 1;
+		    int initialZ = maze.initialZ;
+		    int scale = maze.scale;
+
+            for (int z = 0; z < depth; z++){
+                for (int x = 0; x < width; x++)
+                {
+                    if (map[x, z] != 1)
+                    {
+                         Debug.Log("x , z " + x +"  " + z);
+			    		positionList.Add(new Vector3(initialX + scale * x - 3 , initialY , initialZ + scale * z + 5));
+			    		//StartCoroutine(SpawnZombie(x, z));
+			    	}
+			    }
+		    }
+            return positionList;
+        }
+
         private List<Vector3> GetMazeMap() 
         {
 
-            map = maze.GetComponent<DockRecursive>().SendMap();
+            map = maze.GetComponent<DockRecursive>().GetMap();
 		    int depth = maze.GetComponent<DockRecursive>().depth;
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
@@ -142,7 +189,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (map[x, z] != 1)
                     {
-			    		positionList.Add(new Vector3(initialX + scale * x, initialY , initialZ + scale * z));
+                        Debug.Log("x , z " + x +"  " + z);
+			    		positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -228,7 +276,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 //Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
 				Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-
+                Debug.Log(currentV);
                 String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
                 PhotonNetwork.InstantiateRoomObject(zombieDesicion, currentV, Quaternion.identity, 0);
             }
@@ -300,14 +348,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        private void StartDockScene()
+        private void StartScene()
         {
             Debug.Log("StartGame!");
 
             // on rejoin, we have to figure out if the spaceship exists or not
             // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
 
-            Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
+            //Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
 
 
             //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
@@ -317,22 +365,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        private void StartTunnelScene()
-        {
-            Debug.Log("StartGame!");
-
-            // on rejoin, we have to figure out if the spaceship exists or not
-            // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
-
-            Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
-
-
-            //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
-            if (PhotonNetwork.IsMasterClient)
-            {
-                StartCoroutine(SpawnZombie());
-            }
-        }
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
@@ -393,14 +425,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private void OnCountdownTimerIsExpired()
         {
-            if (SceneManager.GetActiveScene().name == "Dock Thing")
-            {
-                StartDockScene();
-            } 
-            else if (SceneManager.GetActiveScene().name == "Tunnel")
-            {
-                StartTunnelScene();
-            } 
+            StartScene();
         }
         
         #region Public Methods
