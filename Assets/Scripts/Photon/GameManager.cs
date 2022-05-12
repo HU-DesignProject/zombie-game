@@ -45,8 +45,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         [SerializeField]
         private GameObject topPanel;
         public GameObject[] mazeList;
+        private List <List<Vector3> > mazePositionsList;
         private List<bool> isPlayerInMazeList = new List<bool>();
-
+        private Vector3 ppos;
+        private int PlayerCount;
         /// <summary>
         /// Called when the local player left the room. We need to load the launcher scene.
         /// </summary>
@@ -71,10 +73,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
             zombieList.Add(this.copZombiePrefab.name);
+            PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
 
             GameObject[] pList;
             pList = GameObject.FindGameObjectsWithTag("Player");
-
+            mazePositionsList = new List<List<Vector3>>();
             for (int i=0; i < pList.Length; i++){
                 playerList.Add(pList[i]);
                 isPlayerFinishList.Add(false);
@@ -96,7 +99,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (SceneManager.GetActiveScene().name == "Dock Thing") 
             {
-                positionList = GetMazeMap();
+                //positionList = GetMazeMap();
 
                 if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
@@ -111,7 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         
                         Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                        InstantiatePlayer(currentV);
+                        InstantiatePlayer();
                         StartScene();
                     }else{
 
@@ -122,19 +125,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             else if (SceneManager.GetActiveScene().name == "Tunnel")
             {
                 Debug.Log("tunnele girdi");
+
                 mazeList = GameObject.FindGameObjectsWithTag("Maze");
+                
                 for (int i = 0; i < mazeList.Length; i++) 
                 {
-                    Debug.Log(mazeList[i].GetComponent<TunnelMaze>().map);
+                    positionList = GetMazePositions(mazeList[i].GetComponent<TunnelMaze>());
+                    mazePositionsList.Add(positionList);
                 }
 
-                    GetMazePositions(mazeList[0].GetComponent<TunnelMaze>());
-                    Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                        InstantiatePlayer(currentV);
-                    
-                    //InstantiatePlayer(currentV);
+                            Debug.Log("playerList.Count  "+ playerList.Count);
 
-                        StartScene();
+                InstantiatePlayer();
+                StartScene();
 
                 
             } 
@@ -142,10 +145,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             topPanel.SetActive(false);
         }
 
-        private void InstantiatePlayer(Vector3 currentV) 
+        private void InstantiatePlayer( ) 
         {
-            PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(currentV.x, currentV.y , currentV.z), Quaternion.identity, 0);
-
+            for (int i = 0; i < PlayerCount; i++) 
+            {
+                Vector3 currentV = mazePositionsList[i][UnityEngine.Random.Range(0, mazePositionsList[i].Count)];
+                PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
+                //isPlayerInMazeList[i] = true;
+            }
         }
 
         private List<Vector3> GetMazePositions(TunnelMaze maze)
@@ -163,8 +170,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (map[x, z] != 1)
                     {
-                         Debug.Log("x , z " + x +"  " + z);
-			    		positionList.Add(new Vector3(initialX + scale * x - 3 , initialY , initialZ + scale * z + 5));
+			    		positionList.Add(new Vector3(initialX + scale * x  , initialY , initialZ + scale * z ));
+                        
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -190,7 +197,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (map[x, z] != 1)
                     {
                         Debug.Log("x , z " + x +"  " + z);
-			    		positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
+			    		//positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -272,13 +279,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             while (true)
             {
-                yield return new WaitForSeconds(UnityEngine.Random.Range(ZombieGame.ASTEROIDS_MIN_SPAWN_TIME, ZombieGame.ASTEROIDS_MAX_SPAWN_TIME));
+                yield return new WaitForSeconds(2f);
+                
+                List<Vector3>  randomMaze = mazePositionsList[UnityEngine.Random.Range(0, mazePositionsList.Count)];
+                Vector3 currentV = randomMaze[UnityEngine.Random.Range(0, randomMaze.Count)];
 
-                //Vector3 currentV = new Vector3(UnityEngine.Random.Range(-5, 0) , 9, UnityEngine.Random.Range(16, 60));
-				Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                Debug.Log(currentV);
                 String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
-                PhotonNetwork.InstantiateRoomObject(zombieDesicion, currentV, Quaternion.identity, 0);
+                PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
+
             }
         }
 
@@ -344,7 +352,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber == newMasterClient.ActorNumber)
             {
-                StartCoroutine(SpawnZombie());
+                //StartCoroutine(SpawnZombie());
             }
         }
 
