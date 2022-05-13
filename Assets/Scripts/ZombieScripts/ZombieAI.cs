@@ -90,10 +90,7 @@ public class ZombieAI : MonoBehaviour {
     }
     public void Update()
     {
-        if (!photonView.IsMine)
-            {
-                return;
-            }
+
         if (fpsc == null)
         {
             isAttacking = false;

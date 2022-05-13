@@ -19,8 +19,7 @@ public class PlayerHealth : MonoBehaviour
     bool isTakingDamage=false;
 
     GameObject targetPlayer;
-    
-
+  
 
     /*Color blue = new Color(255, 171, 3);
     Color orange = new Color(236,186,34);*/
@@ -38,32 +37,35 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        health=Mathf.Clamp(health,0,maxHealth);
-        UpdateHealthUI();
-        if(Input.GetKeyDown(KeyCode.N)){
-            TakeDamage(Random.Range(5,10));
-        }
-        if(Input.GetKeyDown(KeyCode.M)){
-            RestoreHealth(Random.Range(5,10));
-        }
+        health=targetPlayer.GetComponent<KarakterKontrol>().GetPlayerHealth();
+        if(targetPlayer.GetComponent<KarakterKontrol>().YasiyorMu()){
+            health=Mathf.Clamp(health,0,maxHealth);
+            UpdateHealthUI();
+            if(Input.GetKeyDown(KeyCode.N)){
+                TakeDamage(Random.Range(5,10));
+            }
+            if(Input.GetKeyDown(KeyCode.H)){
+                RestoreHealth(50f);
+            }
 
-        if(isTakingDamage){
-            damageImage.enabled=true;
-            damageImage.color=damageColor;
-            Debug.Log("AAAAA");
+            if(isTakingDamage){
+                damageImage.enabled=true;
+                damageImage.color=damageColor;
 
+            }
+            else{
+                damageImage.color=Color.Lerp(damageImage.color,Color.clear,colorSmoothing*Time.deltaTime*Time.deltaTime);
+
+            }
+
+            isTakingDamage=false;
         }
-        else{
-            damageImage.color=Color.Lerp(damageImage.color,Color.clear,colorSmoothing*Time.deltaTime*Time.deltaTime);
-
-        }
-
-        isTakingDamage=false;
+        
 
     }
 
 
-    public void UpdateHealthUI(){
+     public void UpdateHealthUI(){
         Debug.Log(health);
         float fillF=frontHealthBar.fillAmount;
         float fillB=backHealthBar.fillAmount;
@@ -90,14 +92,18 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage){
         isTakingDamage=true;
-        Debug.Log(damage);
+        Debug.Log(damage+" Geldi bura ???");
         health-=damage;
         lerpTimer=0f;
     }
 
     public void RestoreHealth(float healAmount){
-        health+=healAmount;
-        lerpTimer=0f;
+        if(health<maxHealth){
+            //health+=healAmount;
+            //targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack(healAmount);
+            lerpTimer=0f;
+        }
+      
     }
 
 
