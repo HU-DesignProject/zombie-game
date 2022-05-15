@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         void Start() 
         {
             Debug.Log(SceneManager.GetActiveScene().name);
-
+            Debug.Log("started1");
             zombieList = new List<String>();
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (SceneManager.GetActiveScene().name == "Dock Thing") 
             {
-                //positionList = GetMazeMap();
+                positionList = GetMazeMap();
 
                 if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         
                         Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                        InstantiatePlayer();
+                        InstantiateDockPlayer();
                         StartScene();
                     }else{
 
@@ -143,6 +143,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             } 
             
             topPanel.SetActive(false);
+        }
+
+        private void InstantiateDockPlayer( ) 
+        {
+                Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+                PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
+                //isPlayerInMazeList[i] = true;
+            
         }
 
         private void InstantiatePlayer( ) 
@@ -197,7 +205,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (map[x, z] != 1)
                     {
                         Debug.Log("x , z " + x +"  " + z);
-			    		//positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
+			    		positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -274,6 +282,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         #endregion
 
+        private IEnumerator SpawnDockZombie()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(20f);
+                
+                Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+
+                String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
+                PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
+
+            }
+        }
 
         private IEnumerator SpawnZombie()
         {
@@ -369,7 +390,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //PhotonNetwork.Instantiate(this.zombiePrefab.name, currentV, Quaternion.identity, 0);
             if (PhotonNetwork.IsMasterClient)
             {
-                StartCoroutine(SpawnZombie());
+                StartCoroutine(SpawnDockZombie());
             }
         }
 
