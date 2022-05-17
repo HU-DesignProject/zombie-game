@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class DockMapLocation
 {
@@ -39,16 +40,19 @@ public class DockMaze : MonoBehaviour
 
     public Transform parent;
     private List<GameObject> navMeshElements = new List<GameObject>();
+    public PhotonView photonView;
 
+    private static DockMaze instance;
 
     //public GameObject FPC;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
-        InitialiseMap();
+        photonView = GetComponent<PhotonView>();
+        /*InitialiseMap();
         Generate();
-
+        
         bool temp = true;
         while(map[1,7] == 1 || !Search2D(1, 7, new int[] {5, 0, 5, 1, 0, 1, 5, 0, 5 })) {  //vertical straight
             //Debug.Log(map[3, 4]);
@@ -59,8 +63,38 @@ public class DockMaze : MonoBehaviour
             Generate();
         }
 
-        DrawMap();
+        DrawMap();*/
         //PlaceFPS();
+    }
+
+    public static DockMaze Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<DockMaze>();
+                }
+
+                return instance;
+            }
+        }
+
+    public byte[,] StartDockMaze()
+    {
+        InitialiseMap();
+        Generate();
+        
+        bool temp = true;
+        while(map[1,7] == 1 || !Search2D(1, 7, new int[] {5, 0, 5, 1, 0, 1, 5, 0, 5 })) {  //vertical straight
+            //Debug.Log(map[3, 4]);
+            //Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
+
+               //Debug.Log("bi da");
+            InitialiseMap();
+            Generate();
+        }
+        return map;
     }
 
     void InitialiseMap()
@@ -121,9 +155,11 @@ public class DockMaze : MonoBehaviour
 
     }
 
-    void DrawMap()
+    public void DrawMap(byte[,] map)
     {
         Debug.Log("in maze");
+        Debug.Log("maze55 " + map[5,5]);
+        if (photonView.IsMine) {
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
@@ -138,28 +174,28 @@ public class DockMaze : MonoBehaviour
                 {
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 1, 5 })) //horizontal end piece |-
                 {
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 180, 0);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 1, 5, 0, 5 })) //vertical end piece T
                 {
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, -90, 0);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 1, 5 })) //vertical end piece upside downT
                 {
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 0, 5 })) //vertical straight
                 {
@@ -167,7 +203,7 @@ public class DockMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
+                        //go.transform.SetParent(parent);
                         go.transform.Rotate(0, 90, 0);
                         Debug.Log("x  " + x + "  z  " + z);
                         isBridge = true;
@@ -176,7 +212,7 @@ public class DockMaze : MonoBehaviour
                     {
                         GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                     }
                     
                 }
@@ -185,7 +221,7 @@ public class DockMaze : MonoBehaviour
                     GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
-                    block.transform.SetParent(parent);
+                    //block.transform.SetParent(parent);
                     
                     //Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     //GameObject go = Instantiate(straight, pos, Quaternion.identity);
@@ -197,65 +233,66 @@ public class DockMaze : MonoBehaviour
                 {
                     GameObject go = Instantiate(crossroad);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 1, 0, 5 })) //upper left corner
                 {
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 0, 1 })) //upper right corner
                 {
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 1, 5 })) //lower right corner
                 {
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 5, 0, 1, 5, 1, 5 })) //lower left corner
                 {
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 5, 1, 5 })) //tjunc  upsidedown T
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 1, 0, 1 })) //tjunc  T
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 0, 0, 1, 1, 0, 5 })) //tjunc  -|
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 0, 1 })) //tjunc  |-
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
+                    //go.transform.SetParent(parent);
                 }
 
 
             }
+        }
         //PlaceFPS();
     }
 

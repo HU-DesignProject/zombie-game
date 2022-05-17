@@ -42,6 +42,8 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
         private Dictionary<string, GameObject> roomListEntries;
         private Dictionary<int, GameObject> playerListEntries;
 
+        public GameObject dockRecursive;
+
 
      #region UNITY
 
@@ -136,12 +138,32 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             }
 
             StartGameButton.gameObject.SetActive(CheckPlayersReady());
-
             Hashtable props = new Hashtable
             {
-                {ZombieGame.PLAYER_LOADED_LEVEL, false}
+                {ZombieGame.PLAYER_LOADED_LEVEL, false},
+                {"zombieprop", "OLDIII"},
             };
+
+            /*byte[,] map = GetMazeFromDock();
+
+
+            int count = 0;
+            for (int z = 0; z < dockRecursive.GetComponent<DockRecursive>().depth; z++)
+            {
+                for (int x = 0; x < dockRecursive.GetComponent<DockRecursive>().width; x++)
+                {
+                        props.Add("map"+count, map[x,z]);
+                    count++;
+                }
+            }*/
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+
+        public byte[,]  GetMazeFromDock()
+        {
+            byte[,] map = dockRecursive.GetComponent<DockRecursive>().StartDockMaze();
+             //byte[,] map = DockMaze.Instance.StartDockMaze();
+            return map;
         }
 
         public override void OnLeftRoom()
@@ -231,6 +253,8 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             RoomOptions options = new RoomOptions {MaxPlayers = maxPlayers, PlayerTtl = 10000 };
 
             PhotonNetwork.CreateRoom(roomName, options, null);
+
+            
         }
 
         public void OnJoinRandomRoomButtonClicked()
@@ -275,6 +299,16 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
 
+            
+
+
+            
+            Hashtable props = new Hashtable()
+            {
+                {"isSync" , "true"}
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(props);
             PhotonNetwork.LoadLevel("Dock Thing");
         }
 
@@ -302,6 +336,27 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
                     return false;
                 }
             }
+
+            Hashtable roomProps = new Hashtable
+            {
+                {"roomprop", "OLDIII"},
+
+            };
+
+            byte[,] map = GetMazeFromDock();
+
+
+            int count = 0;
+            for (int z = 0; z < dockRecursive.GetComponent<DockRecursive>().depth; z++)
+            {
+                for (int x = 0; x < dockRecursive.GetComponent<DockRecursive>().width; x++)
+                {
+                    roomProps.Add("map"+count, map[x,z]);
+                    count++;
+                }
+            }
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
 
             return true;
         }

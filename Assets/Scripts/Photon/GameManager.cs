@@ -91,14 +91,54 @@ public class GameManager : MonoBehaviourPunCallbacks
 				return;
 			}
 
+           Debug.Log( "burdayim  " + PhotonNetwork.LocalPlayer.CustomProperties["map0"]);
+           Debug.Log( "burdayim1  " + PhotonNetwork.LocalPlayer.CustomProperties["map1"]);
+           Debug.Log( "roomburda  " + PhotonNetwork.CurrentRoom.CustomProperties["roomprop"]);
+
+            int count = 0;
+            map = new byte[15,15];
+            for (int z = 0; z < 15; z++) 
+            {
+                for (int x = 0; x < 15; x++)
+                {
+                    Debug.Log("hero " +  PhotonNetwork.CurrentRoom.CustomProperties["map"+count.ToString()]);
+                    map[x, z] = (byte) PhotonNetwork.CurrentRoom.CustomProperties["map"+count.ToString()];
+                    count++;
+                }
+            }
+
+            Debug.Log("istheremap " +  map);
+            Debug.Log("istheremap [5,5] " +  map[5,5]);
+            maze.GetComponent<DockRecursive>().DrawMap(map);
+
+           //map = (byte[,]) PhotonNetwork.LocalPlayer.CustomProperties["map"];
+           //Debug.Log( "burdayim  " + map[4,4]);
             Hashtable props = new Hashtable
             {
                 {ZombieGame.PLAYER_LOADED_LEVEL, true}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
+            if (PhotonNetwork.CurrentRoom != null )
+            {
+                Hashtable props2 = PhotonNetwork.CurrentRoom.CustomProperties;
+
+            props2.TryGetValue("isSync", out object sync);
+
+            Debug.Log("issss " + props2["curScn"]);
+
+            foreach (var key in PhotonNetwork.CurrentRoom.CustomProperties.Keys)
+            {
+                Debug.Log(key + ": " + PhotonNetwork.CurrentRoom.CustomProperties[key] + " of type " + PhotonNetwork.CurrentRoom.CustomProperties[key].GetType());
+            }
+            }
+
+            
+            
+
             if (SceneManager.GetActiveScene().name == "Dock Thing") 
             {
+                maze.GetComponent<DockRecursive>().Start();
                 positionList = GetMazeMap();
 
                 if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
@@ -317,6 +357,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (!PhotonNetwork.IsMasterClient)
             {
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
+                return;
             }
             Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
             PhotonNetwork.LoadLevel("Dock Thing");
@@ -343,6 +384,16 @@ public class GameManager : MonoBehaviourPunCallbacks
 		/// Called when a Photon Player got disconnected. We need to load a smaller scene.
 		/// </summary>
 		/// <param name="other">Other.</param>
+
+        public override void OnJoinedRoom()
+        {
+            Debug.Log("joined roommm");
+            Hashtable props = PhotonNetwork.CurrentRoom.CustomProperties;
+
+            props.TryGetValue("isSync", out object sync);
+
+            Debug.Log("syncccc" + sync.ToString());
+        }
 
         public override void OnPlayerLeftRoom(Player other)
         {
