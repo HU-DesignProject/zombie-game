@@ -109,7 +109,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             Debug.Log("istheremap " +  map);
             Debug.Log("istheremap [5,5] " +  map[5,5]);
-            maze.GetComponent<DockRecursive>().DrawMap(map);
+
+            maze.GetComponent<DockRecursive>().Start();
+            //if (maze.GetComponent<DockRecursive>().photonView.IsMine)
+            //{
+                maze.GetComponent<DockRecursive>().DrawMap(map);
+            //}
+            
 
            //map = (byte[,]) PhotonNetwork.LocalPlayer.CustomProperties["map"];
            //Debug.Log( "burdayim  " + map[4,4]);

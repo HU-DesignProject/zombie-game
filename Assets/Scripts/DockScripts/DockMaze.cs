@@ -49,7 +49,8 @@ public class DockMaze : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        photonView = GetComponent<PhotonView>();
+                photonView = GetComponent<PhotonView>();
+
         /*InitialiseMap();
         Generate();
         
@@ -159,7 +160,9 @@ public class DockMaze : MonoBehaviour
     {
         Debug.Log("in maze");
         Debug.Log("maze55 " + map[5,5]);
-        if (photonView.IsMine) {
+        
+
+        //if (photonView.IsMine) {
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
@@ -291,7 +294,7 @@ public class DockMaze : MonoBehaviour
                 }
 
 
-            }
+            //}
         }
         //PlaceFPS();
     }
