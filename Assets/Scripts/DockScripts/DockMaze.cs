@@ -40,7 +40,6 @@ public class DockMaze : MonoBehaviour
 
     public Transform parent;
     private List<GameObject> navMeshElements = new List<GameObject>();
-    public PhotonView photonView;
 
     private static DockMaze instance;
 
@@ -49,7 +48,6 @@ public class DockMaze : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-                photonView = GetComponent<PhotonView>();
 
         /*InitialiseMap();
         Generate();

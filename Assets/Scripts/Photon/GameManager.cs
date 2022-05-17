@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     count++;
                 }
             }
-
+            maze.GetComponent<DockRecursive>().map = map;
             Debug.Log("istheremap " +  map);
             Debug.Log("istheremap [5,5] " +  map[5,5]);
 
