@@ -185,6 +185,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
                 }*/
  
             }
+            //Debug.Log(transform.position);
             
         }
     
