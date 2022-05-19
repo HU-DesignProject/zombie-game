@@ -36,7 +36,7 @@ public class PipeMaze : MonoBehaviour
     public int initialX = 0;
     public int initialY = 0;
     public int initialZ = 0;
-    private ZombieSpawner zombieSpawner;
+    //private ZombieSpawner zombieSpawner;
 
     public GameObject FPC;
 

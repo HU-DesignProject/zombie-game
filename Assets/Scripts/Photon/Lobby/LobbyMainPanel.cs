@@ -141,7 +141,7 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             Hashtable props = new Hashtable
             {
                 {ZombieGame.PLAYER_LOADED_LEVEL, false},
-                {"zombieprop", "OLDIII"},
+                {ZombieGame.PLAYER_FINISHED, false},
             };
 
             /*byte[,] map = GetMazeFromDock();

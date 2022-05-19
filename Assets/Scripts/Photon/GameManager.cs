@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         private Vector3 ppos;
         private int PlayerCount;
         private int zombieCount = 0;
+        private int finishedCount = 0;
         /// <summary>
         /// Called when the local player left the room. We need to load the launcher scene.
         /// </summary>
@@ -250,17 +251,71 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Screen.lockCursor = false;
                 Time.timeScale = 1; 
             }
+
+            //if (Input.GetKeyDown(KeyCode.Tab))
+            //{
+            //} 
             CheckFinishedPlayers();
-            
-            
-            if (isPlayerFinishList.Distinct().Count() == 1 && isPlayerFinishList[0] == true)
+            CheckPlayersFinish();
+            //for (int i = 0; i <playerList.Count; i++ )
+            //{
+            //    if (playerList[i].GetComponent<KarakterKontrol>().isPlayerFinishedScene)
+            //    {
+            //        finishedCount++;
+            //    }
+            //}
+            //Debug.Log("playerList.Count  " + playerList.Count);
+            //if (finishedCount == PlayerCount)
+            //{
+            //    StartCoroutine(FinishScene());
+            //}
+            finishedCount = 0;
+            //if (isPlayerFinishList.Distinct().Count() == 1 && isPlayerFinishList[0] == true)
+            //{
+            //    Debug.Log("isPlayerFinishList.Distinct().Count()  " + isPlayerFinishList.Distinct().Count());
+            //    StartCoroutine(FinishScene());
+            //}
+        }
+
+        private bool CheckPlayersFinish()
+        {
+            //if (!PhotonNetwork.IsMasterClient)
+            //{
+            //    return false;
+            //}
+
+            foreach (Player p in PhotonNetwork.PlayerList)
             {
-                StartCoroutine(FinishScene());
+                Debug.Log("playername " + p.NickName);
+                object isPlayerFinished;
+                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_FINISHED, out isPlayerFinished))
+                {
+                    Debug.Log("isPlayerFinished "+ isPlayerFinished);
+
+                    if (!(bool) isPlayerFinished)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
             }
+            StartCoroutine(FinishScene());
+            return true;
         }
         
         public void CheckFinishedPlayers() {
 
+            //foreach (Player p in PhotonNetwork.PlayerList)
+            //{
+            //    if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_READY, out object isPlayerFinish))
+            //    {
+            //        entry.GetComponent<PlayerListEntry>().SetPlayerReady((bool) isPlayerFinish);
+            //    }
+//
+            //}
             for (int i = 0; i < playerList.Count; i++) {
                 if (playerList[i] == null) 
                 {
@@ -271,12 +326,28 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (playerList[i].GetComponent<KarakterKontrol>().transform.position.x <= 30 && ((byte)playerList[i].GetComponent<KarakterKontrol>().transform.position.x) >= 20 &&
                 playerList[i].GetComponent<KarakterKontrol>().transform.position.z <= 55 && playerList[i].GetComponent<KarakterKontrol>().transform.position.z >= 45) 
                 {
+                    //PhotonNetwork.LocalPlayer.CustomProperties["PLAYER_FINISHED"] = true;
+                    Hashtable props = new Hashtable
+                    {
+                        {ZombieGame.PLAYER_FINISHED, true}
+                    };
+                    PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                    Debug.Log("fin? " + PhotonNetwork.LocalPlayer.CustomProperties["PLAYER_FINISHED"]);
                     Debug.Log("finitoya girdi");
-                    isPlayerFinishList[i] = true;
+                    //isPlayerFinishList[i] = true;
+                    //playerList[i].GetComponent<KarakterKontrol>().isPlayerFinishedScene = true;
                 }
                 else 
                 {
-                    isPlayerFinishList[i] = false;
+                    Hashtable props = new Hashtable
+                    {
+                        {ZombieGame.PLAYER_FINISHED, false}
+                    };
+                    PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                    Debug.Log("fin? " + PhotonNetwork.LocalPlayer.CustomProperties["PLAYER_FINISHED"]);
+                    //PhotonNetwork.LocalPlayer.CustomProperties["PLAYER_FINISHED"] = true;
+                    //isPlayerFinishList[i] = false;
+                    //playerList[i].GetComponent<KarakterKontrol>().isPlayerFinishedScene = false;
                 }
             }
         }
@@ -297,7 +368,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     PhotonNetwork.Destroy(o);
                 }
             }
-
 
             PhotonNetwork.AutomaticallySyncScene = true;
 
@@ -332,8 +402,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 zombieCount++;
                 }
-                
-
             }
         }
 
@@ -351,7 +419,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             }
         }
-
 
         void LoadArena()
         {

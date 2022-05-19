@@ -11,6 +11,7 @@ public class ZombieGame
         public const string PLAYER_LIVES = "PlayerLives";
         public const string PLAYER_READY = "IsPlayerReady";
         public const string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
+        public const string PLAYER_FINISHED = "PlayerFinished";
 
         public static Color GetColor(int colorChoice)
         {

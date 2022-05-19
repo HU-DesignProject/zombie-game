@@ -59,6 +59,7 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     
     [SerializeField]
     public PhotonView photonView;
+    public bool isPlayerFinishedScene = false;
 
     /// <summary>
     /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
