@@ -211,6 +211,12 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         }
 
     }
+
+    public Vector3 GetPlayerPosition()
+    {
+        return transform.position;
+    }
+
     void Hareket()
     {
         float yatay = Input.GetAxis("Horizontal");

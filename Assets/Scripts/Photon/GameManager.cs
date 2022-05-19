@@ -75,14 +75,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             zombieList.Add(this.copZombiePrefab.name);
             PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
 
-            GameObject[] pList;
-            pList = GameObject.FindGameObjectsWithTag("Player");
-            mazePositionsList = new List<List<Vector3>>();
-            for (int i=0; i < pList.Length; i++){
-                playerList.Add(pList[i]);
-                isPlayerFinishList.Add(false);
-                isPlayerInMazeList.Add(false);
-            }
+            
 
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
@@ -159,7 +152,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 
             } 
-            
+            GameObject[] pList;
+            pList = GameObject.FindGameObjectsWithTag("Player");
+            Debug.Log(pList.Length);
+            mazePositionsList = new List<List<Vector3>>();
+            for (int i=0; i < pList.Length; i++){
+                playerList.Add(pList[i]);
+                isPlayerFinishList.Add(false);
+                //isPlayerInMazeList.Add(false);
+            }
             topPanel.SetActive(false);
         }
 
@@ -167,7 +168,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
                 Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
                 PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
-                //isPlayerInMazeList[i] = true;
+                //playerList.Add(playerPrefab);
+
+                isPlayerInMazeList.Add(true);
             
         }
 
@@ -208,7 +211,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         private List<Vector3> GetMazeMap() 
         {
 
-            map = maze.GetComponent<DockRecursive>().GetMap();
+            //map = maze.GetComponent<DockRecursive>().GetMap();
 		    int depth = maze.GetComponent<DockRecursive>().depth;
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
@@ -222,7 +225,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (map[x, z] != 1)
                     {
-                        Debug.Log("x , z " + x +"  " + z);
+                        //Debug.Log("x , z " + x +"  " + z);
 			    		positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
@@ -247,15 +250,13 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Screen.lockCursor = false;
                 Time.timeScale = 1; 
             }
-            
-         
             CheckFinishedPlayers();
-
-            if (isPlayerFinishList.Distinct().Count() == 1)
-            {
-                FinishScene();
-            }
             
+            
+            if (isPlayerFinishList.Distinct().Count() == 1 && isPlayerFinishList[0] == true)
+            {
+                StartCoroutine(FinishScene());
+            }
         }
         
         public void CheckFinishedPlayers() {
@@ -266,9 +267,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                     playerList.RemoveAt(i);
                 }
 
-                Debug.Log(playerList[i].transform.position);
-                if (playerList[i].transform.position.x <= 30 && ((byte)playerList[i].transform.position.x) >= 20 &&
-                playerList[i].transform.position.z <= 55 && playerList[i].transform.position.z >= 45) 
+                //Debug.Log(playerList[i].transform.position);
+                if (playerList[i].GetComponent<KarakterKontrol>().transform.position.x <= 30 && ((byte)playerList[i].GetComponent<KarakterKontrol>().transform.position.x) >= 20 &&
+                playerList[i].GetComponent<KarakterKontrol>().transform.position.z <= 55 && playerList[i].GetComponent<KarakterKontrol>().transform.position.z >= 45) 
                 {
                     Debug.Log("finitoya girdi");
                     isPlayerFinishList[i] = true;
@@ -280,14 +281,30 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        public void FinishScene() {
+        IEnumerator FinishScene() {
             Debug.Log("playersCompleteMaze:  " + playerList.Count);
             if (!PhotonNetwork.IsMasterClient)
             {
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
             }
             Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
+
+            GameObject[] objects = GameObject.FindObjectsOfType<GameObject>();
+            foreach (GameObject o in objects)
+            {
+                if (o.GetComponent<PhotonView>() != null && !o.tag.Equals("Player") && !o.tag.Equals("MainCamera") && !o.tag.Equals("Console_Text"))
+                {
+                    PhotonNetwork.Destroy(o);
+                }
+            }
+
+
+            PhotonNetwork.AutomaticallySyncScene = true;
+
             PhotonNetwork.LoadLevel("FinishScene");
+            SceneManager.LoadScene("FinishScene");
+
+            yield return new WaitForSeconds(20f);
         }
 
         public void continuePressed() 
