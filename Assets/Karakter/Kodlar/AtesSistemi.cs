@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Pun.UtilityScripts;
 public class AtesSistemi : MonoBehaviour
 {
     
@@ -95,8 +97,16 @@ public class AtesSistemi : MonoBehaviour
                         hit.collider.gameObject.GetComponent<ZombieAI>().OnHit(hit.point);
                         hpKontrol.zombieKillCount += 1;
                         Debug.Log("Kill: " + hpKontrol.zombieKillCount);
+                        Hashtable props = new Hashtable()
+                        {
+                            {ZombieGame.PLAYER_ZOMBIE_KILL, hpKontrol.zombieKillCount.ToString()},
+
+                        };
+                        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                        PhotonNetwork.LocalPlayer.SetScore(hpKontrol.zombieKillCount);
+                        
                     }
-                }
+                } 
                // Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             }
             sarjor--;

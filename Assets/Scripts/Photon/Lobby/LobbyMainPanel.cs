@@ -142,6 +142,7 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
             {
                 {ZombieGame.PLAYER_LOADED_LEVEL, false},
                 {ZombieGame.PLAYER_FINISHED, false},
+                {ZombieGame.PLAYER_ZOMBIE_KILL, 0},
             };
 
             /*byte[,] map = GetMazeFromDock();
