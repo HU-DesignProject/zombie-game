@@ -109,7 +109,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             Hashtable props = new Hashtable
             {
                 {ZombieGame.PLAYER_LOADED_LEVEL, true},
-                {ZombieGame.PLAYER_ZOMBIE_KILL, "0"}
+                {ZombieGame.PLAYER_ZOMBIE_KILL, "0"},
+                {ZombieGame.PLAYER_LIVES, true},
+                
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
@@ -289,23 +291,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
          
             CheckFinishedPlayers();
+            CheckLivesPlayers();
             CheckPlayersFinish();
             
         }
 
-        private void UpdatePlayerKillList()
-        {
-            
-
-        }
-
         private bool CheckPlayersFinish()
         {
-            //if (!PhotonNetwork.IsMasterClient)
-            //{
-            //    return false;
-            //}
-
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 object isPlayerFinished;
@@ -323,6 +315,27 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             StartCoroutine(FinishScene());
             return true;
+        }
+
+        private bool CheckLivesPlayers()
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                object isPlayerLives;
+                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_LIVES, out isPlayerLives))
+                {
+                    if (!(bool) isPlayerLives)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            StartCoroutine(FinishScene());
+            return false;
         }
         
         public void CheckFinishedPlayers() {
@@ -369,9 +382,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.AutomaticallySyncScene = true;
-        yield return new WaitForSeconds(5f);
         PhotonNetwork.LoadLevel("FinishScene");
         SceneManager.LoadScene("FinishScene");
+        yield return new WaitForSeconds(1f);
+
     }
 
         public void continuePressed() 

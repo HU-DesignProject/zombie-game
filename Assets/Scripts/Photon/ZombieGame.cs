@@ -10,6 +10,7 @@ public class ZombieGame
         public const string PLAYER_ZOMBIE_KILL = "0";
 
         public const string PLAYER_LIVES = "PlayerLives";
+        public const string PLAYER_DEAD = "PlayerDead";
         public const string PLAYER_READY = "IsPlayerReady";
         public const string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
         public const string PLAYER_FINISHED = "PlayerFinished";

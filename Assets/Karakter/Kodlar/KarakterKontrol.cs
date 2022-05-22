@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class KarakterKontrol : MonoBehaviour, IPunObservable
 {
@@ -342,6 +343,13 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         hayattaMi = false;
         anim.SetBool("yasiyorMu", hayattaMi);
         yield return new WaitForSeconds(5f);
+        Hashtable props = new Hashtable
+            {
+                {ZombieGame.PLAYER_DEAD, true},
+                {ZombieGame.PLAYER_LIVES, false}
+                
+            };
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         PhotonNetwork.Destroy(LocalPlayerInstance);
         //GetComponent<GameManager>().QuitApplication();
         
