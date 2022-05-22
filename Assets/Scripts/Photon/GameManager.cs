@@ -291,7 +291,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
          
             CheckFinishedPlayers();
-            CheckLivesPlayers();
+            //CheckLivesPlayers();
             CheckPlayersFinish();
             
         }
