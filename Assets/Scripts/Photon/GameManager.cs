@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             zombieList.Add(this.warZombiePrefab.name);
             zombieList.Add(this.copZombiePrefab.name);
             PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+            List<Vector3> positionList = new List<Vector3>();
 
             
 
@@ -102,7 +103,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             maze.GetComponent<DockRecursive>().map = map;
 
-            maze.GetComponent<DockRecursive>().DrawMap(map);
+            maze.GetComponent<DockRecursive>().DrawMap();
             
             
             Hashtable props = new Hashtable
@@ -131,7 +132,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         
                         Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
                         InstantiateDockPlayer();
-                        StartScene();
+                        StartScene(positionList);
                     }else{
 
                         Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
@@ -150,10 +151,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                     mazePositionsList.Add(positionList);
                 }
 
-                Debug.Log("playerList.Count  "+ playerList.Count);
+                Debug.Log("playerList.Count tunnel  "+ playerList.Count);
 
                 InstantiatePlayer();
-                StartScene();
+                StartScene(positionList);
 
                 
             } 
@@ -233,7 +234,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (map[x, z] != 1)
                     {
                         //Debug.Log("x , z " + x +"  " + z);
-			    		positionList.Add(new Vector3(initialX + scale * x , initialY , initialZ + scale * z + 5 ));
+			    		positionList.Add(new Vector3(initialX + scale * x  , initialY , initialZ + scale * z  ));
 			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
@@ -384,7 +385,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         #endregion
 
-        private IEnumerator SpawnDockZombie()
+        private IEnumerator SpawnDockZombie(List<Vector3> positionList)
         {
             while (true)
             {
@@ -392,7 +393,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                     yield return new WaitForSeconds(2f);
                 
                 Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-
+                Debug.Log(currentV);
+                
                 String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
                 PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
 
@@ -432,12 +434,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("joined roommm");
-            Hashtable props = PhotonNetwork.CurrentRoom.CustomProperties;
-
-            props.TryGetValue("isSync", out object sync);
-
-            Debug.Log("syncccc" + sync.ToString());
+            Debug.Log("joined room");
+            
         }
 
         public override void OnPlayerLeftRoom(Player other)
@@ -469,12 +467,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        private void StartScene()
+        private void StartScene(List<Vector3> positionList)
         {
             Debug.Log("StartGame!");
             if (PhotonNetwork.IsMasterClient)
             {
-                StartCoroutine(SpawnDockZombie());
+                StartCoroutine(SpawnDockZombie(positionList));
             }
         }
 
@@ -537,7 +535,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private void OnCountdownTimerIsExpired()
         {
-            StartScene();
+            //StartScene(positionList);
         }
         
         #region Public Methods

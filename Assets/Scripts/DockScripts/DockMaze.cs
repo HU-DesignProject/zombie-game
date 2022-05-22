@@ -66,30 +66,16 @@ public class DockMaze : MonoBehaviour
         //PlaceFPS();
     }
 
-    public static DockMaze Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = FindObjectOfType<DockMaze>();
-                }
-
-                return instance;
-            }
-        }
-
+ 
     public byte[,] StartDockMaze()
     {
         InitialiseMap();
         Generate();
         
-        bool temp = true;
         while(map[1,7] == 1 || !Search2D(1, 7, new int[] {5, 0, 5, 1, 0, 1, 5, 0, 5 })) {  //vertical straight
             //Debug.Log(map[3, 4]);
             //Debug.Log(Search2D(3, 4, new int[] { 5, 1, 5, 0, 0, 0, 5, 1, 5 }));
 
-               //Debug.Log("bi da");
             InitialiseMap();
             Generate();
         }
@@ -123,44 +109,12 @@ public class DockMaze : MonoBehaviour
         return map;
     }
     
-    public virtual void PlaceFPS()
+    
+    public void DrawMap()
     {
-        for (int z = 0; z < depth; z++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                if (map[x, z] == 0)
-                {
-                    //FPC.transform.position = new Vector3(initialX + x * scale, initialY + 6, initialZ + z * scale);
-                    return;
-                }
-            }
-        }
 
         
-        /*bool temp = true;
-        while (temp)
-        {
-            int x = Random.Range(0, width);
-            int z = Random.Range(0, depth);
-            Debug.Log("x " + x + " z " +z + "  "  + map[x, z]);
-            if (map[x, z] == 0)
-            {
-                FPC.transform.position = new Vector3( ( -1 * x * scale), initialY,  (z * scale ));
-                Debug.Log("x  " +  (-1 * x * scale) + " z " +  (z * scale ));
-                temp = false;
-            }
-        }*/
-
-    }
-
-    public void DrawMap(byte[,] map)
-    {
-        Debug.Log("in maze");
-        Debug.Log("maze55 " + map[5,5]);
-        
-
-        //if (photonView.IsMine) {
+        isBridge = false;
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
@@ -206,7 +160,6 @@ public class DockMaze : MonoBehaviour
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
                         //go.transform.SetParent(parent);
                         go.transform.Rotate(0, 90, 0);
-                        Debug.Log("x  " + x + "  z  " + z);
                         isBridge = true;
                     }
                     else
