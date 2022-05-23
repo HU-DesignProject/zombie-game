@@ -92,15 +92,14 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage){
         isTakingDamage=true;
-        Debug.Log(damage+" Geldi bura ???");
         health-=damage;
         lerpTimer=0f;
     }
 
     public void RestoreHealth(float healAmount){
         if(health<maxHealth){
-            //health+=healAmount;
-            //targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack(healAmount);
+            health+=healAmount;
+            targetPlayer.GetComponent<KarakterKontrol>().UseHealthPack(healAmount);
             lerpTimer=0f;
         }
       

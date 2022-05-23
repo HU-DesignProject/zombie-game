@@ -2,36 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-  
+
 
 public class ArayuzKontrol : MonoBehaviour
 {
-    public Text mermiText;
-    public Text saglikText;
-    //public GameObject sahteMenu;
+    public Text bulletText;
+    public Text healthPackText;
 
+ 
+    bool isLocked;
     bool oyunDurdu;
-    GameObject oyuncu;
+    GameObject player;
     void Start()
     {
-        oyuncu = GameObject.Find("SWAT");
+        SetCursorLock(false);
+        player = GameObject.Find("SWAT");
     }
 
     // Update is called once per frame
     void Update()
     {
-        //mermiText.text = oyuncu.GetComponent<AtesSistemi>().GetSarjor().ToString()+"/"+ oyuncu.GetComponent<AtesSistemi>().GetCephane().ToString();
-        //saglikText.text = "HP:" + oyuncu.GetComponent<KarakterKontrol>().GetSaglik();
+        bulletText.text = player.GetComponent<AtesSistemi>().GetSarjor().ToString()+"/"+ player.GetComponent<AtesSistemi>().GetCephane().ToString();
+        healthPackText.text = player.GetComponent<KarakterKontrol>().GetHealthPack().ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (oyunDurdu == true)
-            {
-                OyunuDevamEttir();
-            }
-            else if (oyunDurdu == false)
-            {
-                OyunuDurdur();
-            }
+            Cursor.visible=true;
+            Cursor.lockState=CursorLockMode.None;
         }
     }
     public void OyunuDevamEttir()
@@ -45,5 +41,12 @@ public class ArayuzKontrol : MonoBehaviour
         //sahteMenu.SetActive(true);
         Time.timeScale = 0;
         oyunDurdu = true;
+    }
+
+    void SetCursorLock(bool isLocked){
+        this.isLocked=isLocked;
+        Cursor.visible=false;
+        Debug.Log(Cursor.visible);
+        Cursor.lockState=CursorLockMode.Locked;
     }
 }

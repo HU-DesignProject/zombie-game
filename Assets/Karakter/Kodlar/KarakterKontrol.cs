@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public class KarakterKontrol : MonoBehaviour, IPunObservable
 {
@@ -60,6 +62,10 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     [SerializeField]
     public PhotonView photonView;
     public bool isPlayerFinishedScene = false;
+
+    private int healthPack=0; 
+    public Text infoText;
+
 
     /// <summary>
     /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
@@ -189,7 +195,8 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
             //Debug.Log(transform.position);
             
         }
-    
+        
+        infoText.enabled=false;
     }
     public float GetPlayerHealth()
     {
@@ -198,6 +205,23 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
     public bool YasiyorMu()
     {
         return hayattaMi;
+    }
+     public int GetHealthPack(){
+        return healthPack;
+    }
+    public void AddHealthPack(){
+        healthPack++;
+    }
+    public void UseHealthPack(float healAmount){
+        if(healthPack>0){
+            playerHealth+=healAmount;
+            healthPack--;
+        }
+        else{
+            infoText.text="No more healty pack.";
+            infoText.enabled=true;
+        }
+        
     }
     public IEnumerator HasarAl()
     {
