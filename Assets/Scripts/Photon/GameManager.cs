@@ -279,9 +279,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                 }
               
-                //Cursor.visible = true;
+                Cursor.visible = true;
                 //Screen.lockCursor = false;
-                //Time.timeScale = 1; 
+                Time.timeScale = 1; 
             }
             else{
                 playerListPanel.SetActive(false);
@@ -290,10 +290,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                // PlayerListContent.SetActive(false);
             }
-         
-            //CheckFinishedPlayers();
-            //CheckLivesPlayers();
-            //CheckPlayersFinish();
+
+            CheckFinishedPlayers();
+            CheckLivesPlayers();
+            CheckPlayersFinish();
             
         }
 
@@ -327,6 +327,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (!(bool) isPlayerLives)
                     {
+                        StartCoroutine(FinishScene());
                         return true;
                     }
                 }
@@ -335,7 +336,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     return false;
                 }
             }
-            StartCoroutine(FinishScene());
+            
             return false;
         }
         
