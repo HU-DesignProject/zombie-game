@@ -407,7 +407,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     yield return new WaitForSeconds(2f);
                 
                     Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                    String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
+                     String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
                     PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
 
                     zombieCount++;
