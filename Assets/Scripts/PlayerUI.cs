@@ -29,9 +29,6 @@ using Photon.Pun;
 	    [SerializeField]
 	    private Text playerNameText;
 
-		[Tooltip("UI Text to display Player's Bullet Count")]
-	    [SerializeField]
-	    private Text bulletCount;
 
 	    [Tooltip("UI Slider to display Player's Health")]
 	    [SerializeField]
@@ -83,10 +80,7 @@ using Photon.Pun;
 			if (playerHealthSlider != null) {
 				playerHealthSlider.value = target.playerHealth;
 			}
-
-			if (bulletCount.text != null) {
-				bulletCount.text = this.target.photonView.Owner.BulletCount.ToString();
-			}
+			
 			
 			
 		}

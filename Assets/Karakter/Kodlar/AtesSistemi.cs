@@ -111,6 +111,7 @@ public class AtesSistemi : MonoBehaviour
             }
             sarjor--;
         }
+        
     }
     
     public float GetSarjor()
@@ -120,6 +121,14 @@ public class AtesSistemi : MonoBehaviour
     public float GetCephane()
     {
         return cephane;
+    }
+    public void SetAmmunition(float addedAmmunition)
+    {
+        cephane+=addedAmmunition;
+    }
+    public float GetBulletCapacity()
+    {
+        return sarjorKapasitesi;
     }
     private void OnTriggerEnter(Collider other)
     {
