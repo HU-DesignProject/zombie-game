@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class Pickup : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class Pickup : MonoBehaviour
 
     KarakterKontrol hpCheck;
 
-
+    public PhotonView photonView;
 
     private void Start() {
         pickupAS=GetComponent<AudioSource>();
@@ -36,6 +37,7 @@ public class Pickup : MonoBehaviour
         pistolScript=GetComponent<AtesSistemi>();
         playerHealth=GetComponent<PlayerHealth>();
         hpCheck = this.gameObject.GetComponent<KarakterKontrol>();
+        photonView = GetComponent<PhotonView>();
 
     }
 
