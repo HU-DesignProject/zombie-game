@@ -290,9 +290,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                // PlayerListContent.SetActive(false);
             }
 
-            //CheckFinishedPlayers();
-            //CheckLivesPlayers();
-            //CheckPlayersFinish();
+            CheckFinishedPlayers();
+            StartCoroutine(CheckLivesPlayers());
+            CheckPlayersFinish();
             
         }
 
@@ -317,8 +317,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             return true;
         }
 
-        private bool CheckLivesPlayers()
+        IEnumerator CheckLivesPlayers()
         {
+            yield return new WaitForSeconds(5f);
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 object isPlayerLives;
@@ -327,16 +328,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (!(bool) isPlayerLives)
                     {
                         StartCoroutine(FinishScene());
-                        return true;
+                        
                     }
                 }
                 else
                 {
-                    return false;
                 }
             }
             
-            return false;
         }
         
         public void CheckFinishedPlayers() {
@@ -404,12 +403,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             while (true)
             {
-                if (zombieCount < 100) {
+                if (zombieCount < 50) {
                     yield return new WaitForSeconds(2f);
                 
                     Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                    Debug.Log(currentV);
-
                     String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
                     PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
 
