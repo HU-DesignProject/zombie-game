@@ -55,8 +55,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         private Vector3 ppos;
         private int PlayerCount;
         private int zombieCount = 0;
+        private int healthPackCount = 0;
         private int finishedCount = 0;
-        
+        public GameObject healthPack;        
         private List<string> playerListEntries;
         GameObject entry;
 
@@ -290,9 +291,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                // PlayerListContent.SetActive(false);
             }
          
-            CheckFinishedPlayers();
+            //CheckFinishedPlayers();
             //CheckLivesPlayers();
-            CheckPlayersFinish();
+            //CheckPlayersFinish();
             
         }
 
@@ -417,6 +418,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
+        private IEnumerator SpawnDockHealthPack(List<Vector3> positionList)
+        {
+            while (true)
+            {
+                if (healthPackCount < 5) {
+                    yield return new WaitForSeconds(1f);
+                
+                Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];                
+                PhotonNetwork.Instantiate(healthPack.name, currentV, Quaternion.identity, 0);
+
+                healthPackCount++;
+                }
+            }
+        }
+
         private IEnumerator SpawnZombie()
         {
             while (true)
@@ -487,6 +503,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 StartCoroutine(SpawnDockZombie(positionList));
+                StartCoroutine(SpawnDockHealthPack(positionList));
             }
         }
 
