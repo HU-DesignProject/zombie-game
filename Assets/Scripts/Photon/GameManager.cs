@@ -291,7 +291,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
          
             CheckFinishedPlayers();
-            //CheckLivesPlayers();
+            CheckLivesPlayers();
             CheckPlayersFinish();
             
         }
@@ -326,6 +326,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (!(bool) isPlayerLives)
                     {
+                        StartCoroutine(FinishScene());
                         return true;
                     }
                 }
@@ -334,7 +335,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     return false;
                 }
             }
-            StartCoroutine(FinishScene());
+            
             return false;
         }
         
