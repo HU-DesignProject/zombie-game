@@ -52,7 +52,7 @@ public class FinishSceneController : MonoBehaviour {
             entry.transform.localScale = Vector3.one;
 
             string name = (string) PhotonNetwork.CurrentRoom.CustomProperties["name" + i];
-            int kill = (int) PhotonNetwork.CurrentRoom.CustomProperties["kill" + i];
+            string kill = (string) PhotonNetwork.CurrentRoom.CustomProperties["kill" + i];
             Debug.Log("name " + name);
             Debug.Log("kill " + kill);
             entry.GetComponent<PlayerListEntryInGame>().Initialize((string) name.ToString() , (string) kill.ToString());

@@ -363,13 +363,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.CustomProperties.Add("name"+pCount , p.NickName);
 
-            object killCount;
-            p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
-            PhotonNetwork.CurrentRoom.CustomProperties.Add("kill"+pCount , killCount);
+            //object killCount;
+            //p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
+            string killCount = (string) p.CustomProperties[ZombieGame.PLAYER_ZOMBIE_KILL];
+            Debug.Log(killCount);
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("kill"+pCount , killCount.ToString());
             pCount++;
         }
-        
-
 
         if (!PhotonNetwork.IsMasterClient)
         {
