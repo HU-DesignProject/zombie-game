@@ -58,7 +58,7 @@ public class Pickup : MonoBehaviour
             }
         }
         else{
-            Debug.Log("OLMADI MI");
+            //Debug.Log("OLMADI MI");
             pickupText.enabled=false;
         }
 
