@@ -158,12 +158,10 @@ public class TunnelMaze : MonoBehaviour
                         {
                             GameObject _block = Instantiate(endpieceWithRoom);
                             _block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                            _block.transform.SetParent(parent);
                         }
                     }
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 1, 5 })) //horizontal end piece |-
                 {
@@ -174,13 +172,11 @@ public class TunnelMaze : MonoBehaviour
                             GameObject _block = Instantiate(endpieceWithRoom);
                             _block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                             _block.transform.Rotate(0, 180, 0);
-                            _block.transform.SetParent(parent);
                         }
                     }
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 180, 0);
-                    block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 1, 5, 0, 5 })) //vertical end piece T
                 {
@@ -191,13 +187,11 @@ public class TunnelMaze : MonoBehaviour
                                 GameObject _block = Instantiate(endpieceWithRoom);
                                 _block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                                 _block.transform.Rotate(0, -90, 0);
-                                _block.transform.SetParent(parent);
                             }
                         }
                         GameObject block = Instantiate(endpiece);
                         block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         block.transform.Rotate(0, -90, 0);
-                        block.transform.SetParent(parent);
                     
 
                    
@@ -211,13 +205,11 @@ public class TunnelMaze : MonoBehaviour
                             GameObject _block = Instantiate(endpieceWithRoom);
                             _block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                             _block.transform.Rotate(0, 90, 0);
-                            _block.transform.SetParent(parent);
                         }
                     }
                     GameObject block = Instantiate(endpiece);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
-                    block.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 5, 1, 0, 1, 5, 0, 5 })) //vertical straight
                 {
@@ -232,7 +224,6 @@ public class TunnelMaze : MonoBehaviour
                     
                     GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    block.transform.SetParent(parent);
                     
                     
                 }
@@ -241,19 +232,16 @@ public class TunnelMaze : MonoBehaviour
                     GameObject block = Instantiate(straight);
                     block.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     block.transform.Rotate(0, 90, 0);
-                    block.transform.SetParent(parent);
                     
                     //Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     //GameObject go = Instantiate(straight, pos, Quaternion.identity);
                     //go.transform.Rotate(0, 90, 0);
-                    //go.transform.SetParent(parent);
 
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 1, 0, 1 })) //crossroad
                 {
                     GameObject go = Instantiate(crossroad);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 1, 0, 5 })) //upper left corner
                 {
@@ -261,7 +249,6 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 270, 0);
                         isBridge = true;
                     }
@@ -270,7 +257,6 @@ public class TunnelMaze : MonoBehaviour
                         GameObject go = Instantiate(corner);
                         go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         go.transform.Rotate(0, 180, 0);
-                        go.transform.SetParent(parent);
                     }
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 1, 0, 0, 5, 0, 1 })) //upper right corner
@@ -279,7 +265,6 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 180, 0);
                         isBridge = true;
                     } 
@@ -287,7 +272,6 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, 180, 0);
                         isBridge = true;
                     } 
@@ -295,14 +279,12 @@ public class TunnelMaze : MonoBehaviour
                         GameObject go = Instantiate(corner);
                         go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         go.transform.Rotate(0, 90, 0);
-                        go.transform.SetParent(parent);
                     }
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 1, 5 })) //lower right corner
                 {
                     GameObject go = Instantiate(corner);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 5, 0, 1, 5, 1, 5 })) //lower left corner
                 {
@@ -310,14 +292,12 @@ public class TunnelMaze : MonoBehaviour
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
                         isBridge = true;
                     } 
                     else if ( tunnelFloor == 3 && isBridge == false && x == bridgeX && z == bridgeZ)
                     {
                         Vector3 pos = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         GameObject go = Instantiate(bridge, pos, Quaternion.identity);
-                        go.transform.SetParent(parent);
                         go.transform.Rotate(0, -90, 0);
                         isBridge = true;
                     }
@@ -326,7 +306,6 @@ public class TunnelMaze : MonoBehaviour
                         GameObject go = Instantiate(corner);
                         go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                         go.transform.Rotate(0, -90, 0);
-                        go.transform.SetParent(parent);
                     }
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 1, 0, 0, 0, 5, 1, 5 })) //tjunc  upsidedown T
@@ -334,27 +313,23 @@ public class TunnelMaze : MonoBehaviour
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, -90, 0);
-                    go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 0, 1, 0, 1 })) //tjunc  T
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 90, 0);
-                    go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 1, 0, 5, 0, 0, 1, 1, 0, 5 })) //tjunc  -|
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
                     go.transform.Rotate(0, 180, 0);
-                    go.transform.SetParent(parent);
                 }
                 else if (Search2D(x, z, new int[] { 5, 0, 1, 1, 0, 0, 5, 0, 1 })) //tjunc  |-
                 {
                     GameObject go = Instantiate(tIntersection);
                     go.transform.position = new Vector3(initialX + x * scale, initialY, initialZ + z * scale);
-                    go.transform.SetParent(parent);
                 }
 
 

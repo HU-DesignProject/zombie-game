@@ -274,10 +274,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                topPanel.SetActive(true);
-                Cursor.visible = true;
-                Screen.lockCursor = false;
-                Time.timeScale = 1; 
+                //topPanel.SetActive(true);
+                //Cursor.visible = true;
+                //Screen.lockCursor = false;
+                //Time.timeScale = 1; 
             }
             if (Input.GetKey(KeyCode.Tab))
             {
