@@ -56,8 +56,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         private int PlayerCount;
         private int zombieCount = 0;
         private int healthPackCount = 5;
+        private int pistolAmmoCount = 5;
         private int finishedCount = 0;
         public GameObject healthPack;        
+        public GameObject pistolAmmo;        
         private List<string> playerListEntries;
         GameObject entry;
 
@@ -427,6 +429,18 @@ public class GameManager : MonoBehaviourPunCallbacks
            
         }
 
+        public void SpawnDockPistolAmmo(List<Vector3> positionList)
+        {
+           for (int i = pistolAmmoCount; i > 0 ;i--)
+           {
+               Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];                
+            PhotonNetwork.Instantiate(this.pistolAmmo.name, currentV, Quaternion.identity, 0);
+           }
+                    
+            
+           
+        }
+
         private IEnumerator SpawnZombie()
         {
             while (true)
@@ -498,6 +512,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 StartCoroutine(SpawnDockZombie(positionList));
                 SpawnDockHealthPack(positionList);
+                SpawnDockPistolAmmo(positionList);
             }
         }
 
