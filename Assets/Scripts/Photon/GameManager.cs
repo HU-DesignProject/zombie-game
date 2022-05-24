@@ -51,15 +51,16 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         public GameObject[] mazeList;
         private List <List<Vector3> > mazePositionsList;
-        private List<bool> isPlayerInMazeList = new List<bool>();
         private Vector3 ppos;
         private int PlayerCount;
-        private int zombieCount = 0;
+        private int zombieCount = 50;
         private int healthPackCount = 5;
         private int finishedCount = 0;
         public GameObject healthPack;        
         private List<string> playerListEntries;
         GameObject entry;
+        public bool succesfullyFinishScene = false; 
+        public String currentSceneName; 
 
         public void Awake()
         {
@@ -75,14 +76,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         void Start() 
         {
-            Debug.Log(SceneManager.GetActiveScene().name);
+            currentSceneName = SceneManager.GetActiveScene().name;
             zombieList = new List<String>();
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
             zombieList.Add(this.copZombiePrefab.name);
             PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
             List<Vector3> positionList = new List<Vector3>();
-            //healthPack = GetComponent<GameObject>();
 
             // in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
@@ -105,83 +105,60 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             maze.GetComponent<DockRecursive>().DrawMap();
             
-            
             Hashtable props = new Hashtable
             {
                 {ZombieGame.PLAYER_LOADED_LEVEL, true},
                 {ZombieGame.PLAYER_ZOMBIE_KILL, "0"},
                 {ZombieGame.PLAYER_LIVES, true},
-                
+                {ZombieGame.PLAYER_SUCCESSFUL, false}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
 
-            if (SceneManager.GetActiveScene().name == "Dock Thing") 
+            if (currentSceneName == "Dock Thing") 
             {
-                //maze.GetComponent<DockRecursive>().Start();
                 positionList = GetMazeMap();
 
                 if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
-
                     Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
                 } else {
-
                     if (KarakterKontrol.LocalPlayerInstance==null)
                     {
                         Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         
                         Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
                         InstantiateDockPlayer();
                         StartScene(positionList);
-                    }else{
-
+                    }
+                    else{
                         Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
                     }
                 }
             }
-            else if (SceneManager.GetActiveScene().name == "Tunnel")
+            else if (currentSceneName == "Tunnel")
             {
-                Debug.Log("tunnele girdi");
-
-                mazeList = GameObject.FindGameObjectsWithTag("Maze");
+                //mazeList = GameObject.FindGameObjectsWithTag("Maze");
                 
-                for (int i = 0; i < mazeList.Length; i++) 
-                {
-                    positionList = GetMazePositions(mazeList[i].GetComponent<TunnelMaze>());
-                    mazePositionsList.Add(positionList);
-                }
-
-                Debug.Log("playerList.Count tunnel  "+ playerList.Count);
-
-                InstantiatePlayer();
-                StartScene(positionList);
-
-                
+                //for (int i = 0; i < mazeList.Length; i++) 
+                //{
+                //    positionList = GetMazePositions(mazeList[i].GetComponent<TunnelMaze>());
+                //    mazePositionsList.Add(positionList);
+                //}
+//
+                //Debug.Log("playerList.Count tunnel  "+ playerList.Count);
+//
+                //InstantiatePlayer();
+                //StartScene(positionList);                
             } 
-            GameObject[] pList;
-            pList = GameObject.FindGameObjectsWithTag("Player");
-            Debug.Log(pList.Length);
-            mazePositionsList = new List<List<Vector3>>();
-            for (int i=0; i < pList.Length; i++){
-                playerList.Add(pList[i]);
-                isPlayerFinishList.Add(false);
-                //isPlayerInMazeList.Add(false);
-            }
             topPanel.SetActive(false);
             playerListPanel.SetActive(false);
-           // PlayerListContent.SetActive(false);
         }
 
         private void InstantiateDockPlayer( ) 
         {
                 Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
                 PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
-                //playerList.Add(playerPrefab);
-
-                isPlayerInMazeList.Add(true);
-            
         }
 
         private void InstantiatePlayer( ) 
@@ -190,7 +167,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 Vector3 currentV = mazePositionsList[i][UnityEngine.Random.Range(0, mazePositionsList[i].Count)];
                 PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
-                //isPlayerInMazeList[i] = true;
             }
         }
 
@@ -290,54 +266,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                // PlayerListContent.SetActive(false);
             }
 
-            CheckFinishedPlayers();
-            StartCoroutine(CheckLivesPlayers());
-            CheckPlayersFinish();
-            
+            CheckFinishedPlayers();            
         }
 
-        private bool CheckPlayersFinish()
-        {
-            foreach (Player p in PhotonNetwork.PlayerList)
-            {
-                object isPlayerFinished;
-                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_FINISHED, out isPlayerFinished))
-                {
-                    if (!(bool) isPlayerFinished)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            StartCoroutine(FinishScene());
-            return true;
-        }
-
-        IEnumerator CheckLivesPlayers()
-        {
-            yield return new WaitForSeconds(5f);
-            foreach (Player p in PhotonNetwork.PlayerList)
-            {
-                object isPlayerLives;
-                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_LIVES, out isPlayerLives))
-                {
-                    if (!(bool) isPlayerLives)
-                    {
-                        StartCoroutine(FinishScene());
-                        
-                    }
-                }
-                else
-                {
-                }
-            }
-            
-        }
         
+
         public void CheckFinishedPlayers() {
             for (int i = 0; i < playerList.Count; i++) {
                 if (playerList[i] == null) 
@@ -366,7 +299,20 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-    IEnumerator FinishScene() {
+    public void FinishScene() {
+
+        Hashtable roomProps = new Hashtable();
+        if (succesfullyFinishScene) 
+        {
+            roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, true);
+        } 
+        else 
+        {
+            roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, false);
+        }
+        PhotonNetwork.LocalPlayer.SetCustomProperties(roomProps);
+
+        
         Debug.Log("playersCompleteMaze:  " + playerList.Count);
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -384,7 +330,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.LoadLevel("FinishScene");
         SceneManager.LoadScene("FinishScene");
-        yield return new WaitForSeconds(1f);
 
     }
 
@@ -401,17 +346,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private IEnumerator SpawnDockZombie(List<Vector3> positionList)
         {
-            while (true)
+            for (int i = zombieCount; i > 0 ; i--)
             {
-                if (zombieCount < 50) {
-                    yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(3f);
                 
-                    Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
-                     String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
-                    PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
-
-                    zombieCount++;
-                }
+                Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+                String zombieDesicion = zombieList[UnityEngine.Random.Range(0, zombieList.Count)];
+                PhotonNetwork.Instantiate(zombieDesicion, currentV, Quaternion.identity, 0);
             }
         }
 
@@ -422,9 +363,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];                
             PhotonNetwork.Instantiate(this.healthPack.name, currentV, Quaternion.identity, 0);
            }
-                    
-            
-           
         }
 
         private IEnumerator SpawnZombie()
@@ -459,7 +397,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         public override void OnJoinedRoom()
         {
             Debug.Log("joined room");
-            
         }
 
         public override void OnPlayerLeftRoom(Player other)
@@ -506,13 +443,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (changedProps.ContainsKey(ZombieGame.PLAYER_LIVES))
             {
-                //CheckEndOfGame();
-                return;
+                CheckAnyPlayerDie();
+                
             }
 
             if (!PhotonNetwork.IsMasterClient)
             {
                 return;
+            }
+
+            if (changedProps.ContainsKey(ZombieGame.PLAYER_FINISHED))
+            {
+                CheckPlayersFinish();
             }
 
             // if there was no countdown yet, the master client (this one) waits until everyone loaded the level and sets a timer start
@@ -538,6 +480,27 @@ public class GameManager : MonoBehaviourPunCallbacks
         
         }
 
+        private bool CheckPlayersFinish()
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                object isPlayerFinished;
+                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_FINISHED, out isPlayerFinished))
+                {
+                    if (!(bool) isPlayerFinished)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            FinishScene();
+            return true;
+        }
+
         private bool CheckAllPlayerLoadedLevel()
         {
             foreach (Player p in PhotonNetwork.PlayerList)
@@ -556,6 +519,27 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
 
             return true;
+        }
+
+        private void CheckAnyPlayerDie()
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                object isPlayerLives;
+                if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_LIVES, out isPlayerLives))
+                {
+                    if (!(bool) isPlayerLives)
+                    {
+                        
+                        FinishScene();
+                    }
+                }
+                else
+                {
+                    FinishScene();
+                }
+            }
+
         }
 
         private void OnCountdownTimerIsExpired()
