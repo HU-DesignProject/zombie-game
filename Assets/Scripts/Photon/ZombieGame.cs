@@ -15,7 +15,7 @@ public class ZombieGame
         public const string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
         public const string PLAYER_FINISHED = "PlayerFinished";
         public const string PLAYER_SUCCESSFUL = "PlayerSuccesfull";
-        public const string PLAYER_NEXT_MAP = "PlayerNextMap";
+        public const string PLAYER_CURRENT_MAP = "PlayerNextMap";
 
         public static Color GetColor(int colorChoice)
         {

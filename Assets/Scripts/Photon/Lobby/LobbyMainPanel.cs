@@ -145,25 +145,12 @@ public class LobbyMainPanel : MonoBehaviourPunCallbacks
                 {ZombieGame.PLAYER_ZOMBIE_KILL, 0},
             };
 
-            /*byte[,] map = GetMazeFromDock();
-
-
-            int count = 0;
-            for (int z = 0; z < dockRecursive.GetComponent<DockRecursive>().depth; z++)
-            {
-                for (int x = 0; x < dockRecursive.GetComponent<DockRecursive>().width; x++)
-                {
-                        props.Add("map"+count, map[x,z]);
-                    count++;
-                }
-            }*/
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
         public byte[,]  GetMazeFromDock()
         {
             byte[,] map = dockRecursive.GetComponent<DockRecursive>().StartDockMaze();
-            //byte[,] map = DockMaze.Instance.StartDockMaze();
             Debug.Log("drawed maze");
             Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);
 

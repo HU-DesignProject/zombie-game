@@ -53,21 +53,27 @@ public class TunnelMaze : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
+    }
+
+    public byte[,] StartTunnelMaze(int tunnelFloor)
+    {
         InitialiseMap();
         Generate();
         
-        CreateBridge();
+        CreateBridge(tunnelFloor);
 
         while(map[bridgeX,bridgeZ] == 1 || !Search2D(bridgeX, bridgeZ,  bridgeArray)) {  
             InitialiseMap();
             Generate();
         }
         
-        DrawMap();
+        //DrawMap();
         //PlaceFPS();
+        return map;
     }
 
-    public void CreateBridge() {
+    public void CreateBridge(int tunnelFloor) {
         if (tunnelFloor == 1) 
         {
             bridgeX = 8;
@@ -127,40 +133,12 @@ public class TunnelMaze : MonoBehaviour
         return map;
     }
     
-    public virtual void PlaceFPS()
-    {
-        for (int z = 0; z < depth; z++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                if (map[x, z] == 0)
-                {
-                    //FPC.transform.position = new Vector3(initialX + x * scale, initialY + 6, initialZ + z * scale);
-                    return;
-                }
-            }
-        }
-
-        
-        /*bool temp = true;
-        while (temp)
-        {
-            int x = Random.Range(0, width);
-            int z = Random.Range(0, depth);
-            Debug.Log("x " + x + " z " +z + "  "  + map[x, z]);
-            if (map[x, z] == 0)
-            {
-                FPC.transform.position = new Vector3( ( -1 * x * scale), initialY,  (z * scale ));
-                Debug.Log("x  " +  (-1 * x * scale) + " z " +  (z * scale ));
-                temp = false;
-            }
-        }*/
-
-    }
-
-    void DrawMap()
-    {
+    public void DrawMap()
+    {   
+        isBridge = false;
         Debug.Log("in maze");
+                        Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);
+
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
@@ -173,6 +151,7 @@ public class TunnelMaze : MonoBehaviour
                 }
                 else if (Search2D(x, z, new int[] { 5, 1, 5, 0, 0, 1, 5, 1, 5 })) //horizontal end piece -|
                 {
+                    Debug.Log("tunnel horizontal end piece -|");
                     if (x + 1 <= width && z + 1 <= depth && z - 1 <= depth ) 
                     {
                         if (map[x + 1, z - 1] == 1 && map[x + 1, z + 1] == 1)  

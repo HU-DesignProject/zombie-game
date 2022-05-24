@@ -65,6 +65,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         public void Awake()
         {
             Instance = this;
+            currentSceneName = SceneManager.GetActiveScene().name;
+            Debug.Log(currentSceneName);
         }
 
         public override void OnEnable()
@@ -76,7 +78,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         void Start() 
         {
-            currentSceneName = SceneManager.GetActiveScene().name;
+            
             zombieList = new List<String>();
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
@@ -91,33 +93,36 @@ public class GameManager : MonoBehaviourPunCallbacks
 				return;
 			}
 
-            int count = 0;
-            map = new byte[15,15];
-            for (int z = 0; z < 15; z++) 
-            {
-                for (int x = 0; x < 15; x++)
-                {
-                    map[x, z] = (byte) PhotonNetwork.CurrentRoom.CustomProperties["map"+count.ToString()];
-                    count++;
-                }
-            }
-            maze.GetComponent<DockRecursive>().map = map;
-
-            maze.GetComponent<DockRecursive>().DrawMap();
             
-            Hashtable props = new Hashtable
-            {
-                {ZombieGame.PLAYER_LOADED_LEVEL, true},
-                {ZombieGame.PLAYER_ZOMBIE_KILL, "0"},
-                {ZombieGame.PLAYER_LIVES, true},
-                {ZombieGame.PLAYER_SUCCESSFUL, false}
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
 
             if (currentSceneName == "Dock Thing") 
             {
-                positionList = GetMazeMap();
+                int count = 0;
+                map = new byte[15,15];
+                for (int z = 0; z < 15; z++) 
+                {
+                    for (int x = 0; x < 15; x++)
+                    {
+                        map[x, z] = (byte) PhotonNetwork.CurrentRoom.CustomProperties["map"+count.ToString()];
+                        count++;
+                    }
+                }
+                PhotonNetwork.CurrentRoom.CustomProperties.Add("CurrentSceneName", currentSceneName);
+                maze.GetComponent<DockRecursive>().map = map;
+
+                maze.GetComponent<DockRecursive>().DrawMap();
+                
+                Hashtable props = new Hashtable
+                {
+                    {ZombieGame.PLAYER_LOADED_LEVEL, true},
+                    //{ZombieGame.PLAYER_ZOMBIE_KILL, "0"},
+                    {ZombieGame.PLAYER_LIVES, true},
+                    {ZombieGame.PLAYER_SUCCESSFUL, false},
+                    {ZombieGame.PLAYER_CURRENT_MAP, currentSceneName}
+                };
+                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                positionList = GetMazeMapDock();
 
                 if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
                     Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
@@ -138,19 +143,61 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             else if (currentSceneName == "Tunnel")
             {
-                //mazeList = GameObject.FindGameObjectsWithTag("Maze");
+                int count = 0;
+                map = new byte[10,10];
+                for (int z = 0; z < 10; z++) 
+                {
+                    for (int x = 0; x < 10; x++)
+                    {
+                        map[x, z] = (byte) PhotonNetwork.CurrentRoom.CustomProperties["map1_"+count.ToString()];
+                        count++;
+                    }
+                }
+                Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);
+
+                PhotonNetwork.CurrentRoom.CustomProperties["CurrentSceneName"] = currentSceneName;
+                maze.GetComponent<TunnelRecursive>().map = map;
+
+                maze.GetComponent<TunnelRecursive>().DrawMap();
                 
-                //for (int i = 0; i < mazeList.Length; i++) 
-                //{
-                //    positionList = GetMazePositions(mazeList[i].GetComponent<TunnelMaze>());
-                //    mazePositionsList.Add(positionList);
-                //}
-//
-                //Debug.Log("playerList.Count tunnel  "+ playerList.Count);
-//
-                //InstantiatePlayer();
-                //StartScene(positionList);                
+                Hashtable props = new Hashtable
+                {
+                    {ZombieGame.PLAYER_LOADED_LEVEL, true},
+                    //{ZombieGame.PLAYER_ZOMBIE_KILL, "0"},
+                    {ZombieGame.PLAYER_LIVES, true},
+                    {ZombieGame.PLAYER_SUCCESSFUL, false},
+                    {ZombieGame.PLAYER_CURRENT_MAP, currentSceneName}
+                };
+                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                positionList = GetMazeMapTunnel();
+
+                if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
+                    Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+                } else {
+                    if (KarakterKontrol.LocalPlayerInstance==null)
+                    {
+                        Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                        // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                        
+                        Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+                        InstantiateTunnelPlayer();
+                        StartScene(positionList);
+                    }
+                    else{
+                        Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+                    }
+                }
+                   
             } 
+            GameObject[] pList;
+            pList = GameObject.FindGameObjectsWithTag("Player");
+            Debug.Log(pList.Length);
+            mazePositionsList = new List<List<Vector3>>();
+            for (int i=0; i < pList.Length; i++){
+                playerList.Add(pList[i]);
+                isPlayerFinishList.Add(false);
+                //isPlayerInMazeList.Add(false);
+            }
             topPanel.SetActive(false);
             playerListPanel.SetActive(false);
         }
@@ -161,24 +208,22 @@ public class GameManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
         }
 
-        private void InstantiatePlayer( ) 
+        private void InstantiateTunnelPlayer( ) 
         {
-            for (int i = 0; i < PlayerCount; i++) 
-            {
-                Vector3 currentV = mazePositionsList[i][UnityEngine.Random.Range(0, mazePositionsList[i].Count)];
-                PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
-            }
+            
+            Vector3 currentV = positionList[UnityEngine.Random.Range(0, positionList.Count)];
+            PhotonNetwork.Instantiate(this.playerPrefab.name, currentV, Quaternion.identity, 0);
+            
         }
 
-        private List<Vector3> GetMazePositions(TunnelMaze maze)
+        private List<Vector3> GetMazeMapTunnel()
         {
-            map = maze.GetMap();
-            int depth = maze.depth;
-            int width = maze.width;
-		    int initialX = maze.initialX;
-		    int initialY = maze.initialY + 1;
-		    int initialZ = maze.initialZ;
-		    int scale = maze.scale;
+            int depth = maze.GetComponent<TunnelRecursive>().depth;
+            int width = maze.GetComponent<TunnelRecursive>().width;
+		    int initialX = maze.GetComponent<TunnelRecursive>().initialX;
+		    int initialY = maze.GetComponent<TunnelRecursive>().initialY + 1;
+		    int initialZ = maze.GetComponent<TunnelRecursive>().initialZ;
+		    int scale = maze.GetComponent<TunnelRecursive>().scale;
 
             for (int z = 0; z < depth; z++){
                 for (int x = 0; x < width; x++)
@@ -186,18 +231,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (map[x, z] != 1)
                     {
 			    		positionList.Add(new Vector3(initialX + scale * x  , initialY , initialZ + scale * z ));
-                        
-			    		//StartCoroutine(SpawnZombie(x, z));
 			    	}
 			    }
 		    }
             return positionList;
         }
 
-        private List<Vector3> GetMazeMap() 
+        private List<Vector3> GetMazeMapDock() 
         {
-
-            //map = maze.GetComponent<DockRecursive>().GetMap();
 		    int depth = maze.GetComponent<DockRecursive>().depth;
 		    int width = maze.GetComponent<DockRecursive>().width;
 		    int initialX = maze.GetComponent<DockRecursive>().initialX;
@@ -277,7 +318,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     playerList.RemoveAt(i);
                 }
-
+                
                 if (playerList[i].GetComponent<KarakterKontrol>().transform.position.x <= 30 && ((byte)playerList[i].GetComponent<KarakterKontrol>().transform.position.x) >= 20 &&
                 playerList[i].GetComponent<KarakterKontrol>().transform.position.z <= 55 && playerList[i].GetComponent<KarakterKontrol>().transform.position.z >= 45) 
                 {
@@ -304,20 +345,35 @@ public class GameManager : MonoBehaviourPunCallbacks
         Hashtable roomProps = new Hashtable();
         if (succesfullyFinishScene) 
         {
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("TeamSuccess", true);
             roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, true);
         } 
         else 
         {
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("TeamSuccess", false);
             roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, false);
         }
         PhotonNetwork.LocalPlayer.SetCustomProperties(roomProps);
-
         
-        Debug.Log("playersCompleteMaze:  " + playerList.Count);
+        int pCount = 0;
+        PhotonNetwork.CurrentRoom.CustomProperties.Add("TotalPlayerCount" , PhotonNetwork.PlayerList.Count());
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("name"+pCount , p.NickName);
+
+            object killCount;
+            p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("kill"+pCount , killCount);
+            pCount++;
+        }
+        
+
+
         if (!PhotonNetwork.IsMasterClient)
         {
             Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
         }
+
         Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
         GameObject[] objects = GameObject.FindObjectsOfType<GameObject>();
         foreach (GameObject o in objects)
@@ -330,7 +386,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.LoadLevel("FinishScene");
         SceneManager.LoadScene("FinishScene");
-
     }
 
         public void continuePressed() 
@@ -454,7 +509,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (changedProps.ContainsKey(ZombieGame.PLAYER_FINISHED))
             {
-                CheckPlayersFinish();
+                if (CheckPlayersFinish())
+                {
+                    FinishScene();
+                }
             }
 
             // if there was no countdown yet, the master client (this one) waits until everyone loaded the level and sets a timer start
@@ -482,6 +540,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         private bool CheckPlayersFinish()
         {
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                return false;
+            }
+
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 object isPlayerFinished;
@@ -497,16 +560,16 @@ public class GameManager : MonoBehaviourPunCallbacks
                     return false;
                 }
             }
-            FinishScene();
+            succesfullyFinishScene = true;
             return true;
         }
+
 
         private bool CheckAllPlayerLoadedLevel()
         {
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 object playerLoadedLevel;
-
                 if (p.CustomProperties.TryGetValue(ZombieGame.PLAYER_LOADED_LEVEL, out playerLoadedLevel))
                 {
                     if ((bool) playerLoadedLevel)
@@ -514,10 +577,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         continue;
                     }
                 }
-
                 return false;
             }
-
             return true;
         }
 
@@ -530,7 +591,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     if (!(bool) isPlayerLives)
                     {
-                        
                         FinishScene();
                     }
                 }
