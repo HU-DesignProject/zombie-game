@@ -251,6 +251,10 @@ public class KarakterKontrol : MonoBehaviour, IPunObservable
         anim.SetFloat("Horizontal", yatay);
         anim.SetFloat("Vertical", dikey);
         this.gameObject.transform.Translate(yatay * karakterHiz*Time.deltaTime, 0, dikey * karakterHiz*Time.deltaTime);
+        if(Input.GetKey(KeyCode.LeftShift)){
+            this.gameObject.transform.Translate(yatay * karakterHiz*2*Time.deltaTime, 0, dikey * karakterHiz*Time.deltaTime);
+
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
