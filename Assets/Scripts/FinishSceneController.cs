@@ -27,6 +27,7 @@ public class FinishSceneController : MonoBehaviour {
     private string nextMap = "";
 
     public GameObject tunnelRecursive;
+    public GameObject dockRecursive;
 
     void Awake()
     {
@@ -64,6 +65,7 @@ public class FinishSceneController : MonoBehaviour {
             if (currentMap == "Dock Thing")
             {
                 nextMap = "Tunnel";
+                SendTunnelMazePositionsToProp();
             }
             else 
             {
@@ -74,9 +76,10 @@ public class FinishSceneController : MonoBehaviour {
         {
             teamSituation.text = "You fail :( You must play the scene until you success. You can do it!";
             nextMap = currentMap;
+            SendDockMazePositionsToProp();
         }
 
-        SendTunnelMazePositionsToProp();
+        
     }
 
     public byte[,]  GetMazeFromTunnel()
@@ -88,6 +91,13 @@ public class FinishSceneController : MonoBehaviour {
         return map;
     }
 
+    public byte[,]  GetMazeFromDock()
+    {
+        byte[,] map = dockRecursive.GetComponent<DockRecursive>().StartDockMaze();
+        Debug.Log("drawed maze");
+        Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);        return map;
+    }
+
     public void SendTunnelMazePositionsToProp()
     {
         Hashtable roomProps = new Hashtable
@@ -95,7 +105,7 @@ public class FinishSceneController : MonoBehaviour {
             {"roomprop", "OLDIII"},
         };
         byte[,] map = GetMazeFromTunnel();
-                Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);
+        Debug.Log("mapppp" + map[5,1] + " " + map[5,2] + " " + map[5,3] + " " + map[5,4] + " " + map[5,5] + " " + map[5,6] + " " + map[5,7] + " " + map[5,8]);
 
         int count = 0;
         for (int z = 0; z < tunnelRecursive.GetComponent<TunnelRecursive>().depth; z++)
@@ -103,6 +113,25 @@ public class FinishSceneController : MonoBehaviour {
             for (int x = 0; x < tunnelRecursive.GetComponent<TunnelRecursive>().width; x++)
             {
                 roomProps.Add("map1_"+count, map[x,z]);
+                count++;
+            }
+        }
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+    }
+
+    public void SendDockMazePositionsToProp()
+    {
+        Hashtable roomProps = new Hashtable
+        {
+            {"roomprop", "OLDIII"},
+        };
+        byte[,] map = GetMazeFromDock();
+        int count = 0;
+        for (int z = 0; z < dockRecursive.GetComponent<DockRecursive>().depth; z++)
+        {
+            for (int x = 0; x < dockRecursive.GetComponent<DockRecursive>().width; x++)
+            {
+                roomProps.Add("map"+count, map[x,z]);
                 count++;
             }
         }

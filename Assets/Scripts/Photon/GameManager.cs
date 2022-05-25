@@ -110,7 +110,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         count++;
                     }
                 }
-                PhotonNetwork.CurrentRoom.CustomProperties.Add("CurrentSceneName", currentSceneName);
+
+                PhotonNetwork.CurrentRoom.CustomProperties["CurrentSceneName"] = currentSceneName;
                 maze.GetComponent<DockRecursive>().map = map;
 
                 maze.GetComponent<DockRecursive>().DrawMap();
@@ -392,7 +393,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.Destroy(o);
             }
         }
+        
         PhotonNetwork.AutomaticallySyncScene = true;
+        
+        
+        
         //PhotonNetwork.LoadLevel("FinishScene");
         SceneManager.LoadScene("FinishScene");
     }
