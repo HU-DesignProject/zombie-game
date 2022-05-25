@@ -202,7 +202,52 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             topPanel.SetActive(false);
             playerListPanel.SetActive(false);
+
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                if (!playerListEntries.Contains(p.NickName))
+                {                    
+                entry = Instantiate(PlayerListEntryPrefab);
+                entry.transform.SetParent(PlayerListContent.transform);
+                entry.transform.localScale = Vector3.one;
+                object killCount;
+                p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
+                
+                entry.GetComponent<PlayerListEntryInGame>().Initialize(p.NickName, (string) killCount.ToString());
+                playerListEntries.Add(p.NickName);
+                }
+            }
+            
+            
         }
+
+        void Update() 
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                topPanel.SetActive(true);
+                Cursor.visible = true;
+                Screen.lockCursor = false;
+                Time.timeScale = 1; 
+            }
+            if (Input.GetKey(KeyCode.Tab))
+            {
+                playerListPanel.SetActive(true);
+                Cursor.visible = true;
+                //Screen.lockCursor = false;
+                //Time.timeScale = 1; 
+            }
+            else{
+                playerListPanel.SetActive(false);
+                //playerListEntries.Clear();
+                //Destroy(entry);
+
+               // PlayerListContent.SetActive(false);
+            }
+
+            CheckFinishedPlayers();            
+        }
+
 
         private void InstantiateDockPlayer( ) 
         {
@@ -270,48 +315,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             CountdownTimer.OnCountdownTimerHasExpired -= OnCountdownTimerIsExpired;
         }
 
-        void Update() 
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                //topPanel.SetActive(true);
-                //Cursor.visible = true;
-                //Screen.lockCursor = false;
-                //Time.timeScale = 1; 
-            }
-            if (Input.GetKey(KeyCode.Tab))
-            {
-                playerListPanel.SetActive(true);
-                foreach (Player p in PhotonNetwork.PlayerList)
-                {
-                    if (!playerListEntries.Contains(p.NickName))
-                    {                    
-                    entry = Instantiate(PlayerListEntryPrefab);
-                    entry.transform.SetParent(PlayerListContent.transform);
-                    entry.transform.localScale = Vector3.one;
-                    object killCount;
-                    p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
-                    
-                    entry.GetComponent<PlayerListEntryInGame>().Initialize(p.NickName, (string) killCount);
-                    playerListEntries.Add(p.NickName);
-                    }
-                }
-              
-                Cursor.visible = true;
-                //Screen.lockCursor = false;
-                Time.timeScale = 1; 
-            }
-            else{
-                playerListPanel.SetActive(false);
-                playerListEntries.Clear();
-                Destroy(entry);
-
-               // PlayerListContent.SetActive(false);
-            }
-
-            CheckFinishedPlayers();            
-        }
-
+        
         
 
         public void CheckFinishedPlayers() {
@@ -344,18 +348,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void FinishScene() {
 
-        Hashtable roomProps = new Hashtable();
+        //Hashtable roomProps = new Hashtable();
         if (succesfullyFinishScene) 
         {
             PhotonNetwork.CurrentRoom.CustomProperties.Add("TeamSuccess", true);
-            roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, true);
+            //roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, true);
         } 
         else 
         {
             PhotonNetwork.CurrentRoom.CustomProperties.Add("TeamSuccess", false);
-            roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, false);
+            //roomProps.Add(ZombieGame.PLAYER_SUCCESSFUL, false);
         }
-        PhotonNetwork.LocalPlayer.SetCustomProperties(roomProps);
+        //PhotonNetwork.LocalPlayer.SetCustomProperties(roomProps);
         
         int pCount = 0;
         PhotonNetwork.CurrentRoom.CustomProperties.Add("TotalPlayerCount" , PhotonNetwork.PlayerList.Count());
@@ -365,9 +369,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             //object killCount;
             //p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
-            string killCount = (string) p.CustomProperties[ZombieGame.PLAYER_ZOMBIE_KILL];
+            object killCount =  p.CustomProperties[ZombieGame.PLAYER_ZOMBIE_KILL];
             Debug.Log(killCount);
-            PhotonNetwork.CurrentRoom.CustomProperties.Add("kill"+pCount , killCount.ToString());
+            
+            PhotonNetwork.CurrentRoom.CustomProperties.Add("kill"+pCount , (string) killCount.ToString());
+            
+            
             pCount++;
         }
 
@@ -386,7 +393,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.LoadLevel("FinishScene");
+        //PhotonNetwork.LoadLevel("FinishScene");
         SceneManager.LoadScene("FinishScene");
     }
 
@@ -514,7 +521,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (changedProps.ContainsKey(ZombieGame.PLAYER_LIVES))
             {
                 CheckAnyPlayerDie();
-                
             }
 
             if (!PhotonNetwork.IsMasterClient)
@@ -529,6 +535,12 @@ public class GameManager : MonoBehaviourPunCallbacks
                     FinishScene();
                 }
             }
+
+            if (changedProps.ContainsKey(ZombieGame.PLAYER_ZOMBIE_KILL))
+            {
+                UpdatePlayerKillList();
+            }
+
 
             // if there was no countdown yet, the master client (this one) waits until everyone loaded the level and sets a timer start
             int startTimestamp;
@@ -550,7 +562,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     //InfoText.text = "Waiting for other players...";
                 }
             }
-        
         }
 
         private bool CheckPlayersFinish()
@@ -579,6 +590,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             return true;
         }
 
+        private void UpdatePlayerKillList()
+        {
+            Destroy(entry);
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                entry = Instantiate(PlayerListEntryPrefab);
+                entry.transform.SetParent(PlayerListContent.transform);
+                entry.transform.localScale = Vector3.one;
+                object killCount;
+                p.CustomProperties.TryGetValue(ZombieGame.PLAYER_ZOMBIE_KILL, out killCount);
+                entry.GetComponent<PlayerListEntryInGame>().Initialize(p.NickName, (string) killCount.ToString());
+                playerListEntries.Add(p.NickName);
+                
+            }
+        }
 
         private bool CheckAllPlayerLoadedLevel()
         {
