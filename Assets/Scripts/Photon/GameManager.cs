@@ -224,17 +224,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         void Update() 
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKey(KeyCode.Escape))
             {
                 topPanel.SetActive(true);
                 Cursor.visible = true;
                 Screen.lockCursor = false;
-                Time.timeScale = 1; 
+            }
+            else 
+            {
+                Debug.Log("continue");
+                topPanel.SetActive(false);
+                Cursor.visible = false;
+                Screen.lockCursor = true;
             }
             if (Input.GetKey(KeyCode.Tab))
             {
                 playerListPanel.SetActive(true);
-                Cursor.visible = true;
+                //Cursor.visible = true;
                 //Screen.lockCursor = false;
                 //Time.timeScale = 1; 
             }
@@ -402,14 +408,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("FinishScene");
     }
 
-        public void continuePressed() 
-        {
-            Debug.Log("continue");
-            topPanel.SetActive(false);
-            Cursor.visible = false;
-            Screen.lockCursor = true;
-            Time.timeScale = 1; 
-        }
+        
 
         #endregion
 
