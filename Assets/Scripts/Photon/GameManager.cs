@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             zombieList = new List<String>();
             zombieList.Add(this.yakuZombiePrefab.name);
             zombieList.Add(this.warZombiePrefab.name);
-            zombieList.Add(this.copZombiePrefab.name);
+            //zombieList.Add(this.copZombiePrefab.name);
             PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
             List<Vector3> positionList = new List<Vector3>();
 
@@ -332,8 +332,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                     playerList.RemoveAt(i);
                 }
                 
-                if (playerList[i].GetComponent<KarakterKontrol>().transform.position.x <= 30 && ((byte)playerList[i].GetComponent<KarakterKontrol>().transform.position.x) >= 20 &&
-                playerList[i].GetComponent<KarakterKontrol>().transform.position.z <= 55 && playerList[i].GetComponent<KarakterKontrol>().transform.position.z >= 45) 
+                if (playerList[i].GetComponent<KarakterKontrol>().transform.position.x <= 10 && playerList[i].GetComponent<KarakterKontrol>().transform.position.x >= -15 &&
+                playerList[i].GetComponent<KarakterKontrol>().transform.position.z <= 77 && playerList[i].GetComponent<KarakterKontrol>().transform.position.z >= 68) 
                 {
                     Hashtable props = new Hashtable
                     {
